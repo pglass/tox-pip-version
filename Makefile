@@ -3,6 +3,8 @@ VENV_ACTIVATE = . $(VENV)/bin/activate
 
 PWD = $(shell pwd)
 
+TOX = tox
+
 $(VENV):
 	virtualenv .venv
 	$(VENV_ACTIVATE); pip install tox
@@ -10,8 +12,9 @@ $(VENV):
 
 .PHONY: test
 test: clean $(VENV)
-	cd $(PWD)/tests/test-two-envs && tox
-	cd $(PWD)/tests/test-env-inheritance && tox
+	cd $(PWD)/tests/test-two-envs && $(TOX)
+	cd $(PWD)/tests/test-env-inheritance && $(TOX)
+	cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
 
 clean:
 	rm -rf $(VENV)

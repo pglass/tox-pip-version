@@ -15,18 +15,27 @@ package. This should be used as a temporary fix for breakages in upstream pip,
 or in conjunction with a regular process to update the version pin.
 
 
-
 ### Usage
 
-Install the package and then include `pip_version` in your tox.ini
+Install the package and include `pip_version` in your tox.ini
 
-```
+```tox
 [testenv]
 pip_version = 19.0.1
 ```
 
-This will install that specific pip into the tox-created virtualenv, before
-dependencies are installed.
+Or, set the `TOX_PIP_VERSION` environment variable,
 
-If the plugin is installed `pip_version` is not provided, the plugin does
+```bash
+export TOX_PIP_VERSION=18.1
+tox
+```
+
+The plugin will install that specific pip into the tox-created virtualenv,
+just after tox creates the virtualenv, but before dependencies are installed.
+
+The `pip_version` within tox.ini, if present, is always used over the
+environment variable.
+
+If neither `pip_version` or `TOX_PIP_VERSION` is present, the plugin does
 nothing.

@@ -7,8 +7,14 @@ matrix:
       env: TOXENV=py35
     - python: 3.6
       env: TOXENV=py36
-    - python: 3.7
-      env: TOXENV=py37
+    # 3.7 errors out. I think there's a workaround, will re-enable: https://github.com/travis-ci/travis-ci/issues/9069
+    #   3.7 is not installed; attempting download
+    #   Downloading archive: https://s3.amazonaws.com/travis-python-archives/binaries/ubuntu/14.04/x86_64/python-3.7.tar.bz2
+    #   $ curl -sSf -o python-3.7.tar.bz2 ${archive_url}
+    #   curl: (22) The requested URL returned error: 403 Forbidden
+    #   Unable to download 3.7 archive. The archive may not exist. Please consider a different version.
+    # - python: 3.7
+    # - env: TOXENV=py37
 # command to install dependencies
 install:
   - pip install tox-travis
@@ -16,3 +22,5 @@ install:
 script:
   - python setup.py develop
   - tox
+notifications:
+  email: false

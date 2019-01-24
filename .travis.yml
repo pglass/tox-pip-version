@@ -14,7 +14,5 @@ install:
   - pip install tox-travis
 # command to run tests
 script:
-  - python3 -m venv .venv
-  - source .venv/bin/activate
   - python setup.py develop
   - tox

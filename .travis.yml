@@ -17,7 +17,6 @@ install:
   - pip install tox-travis
 # command to run tests
 script:
-  - python setup.py develop
-  - tox
+  - make test
 notifications:
   email: false

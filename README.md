@@ -39,3 +39,13 @@ environment variable.
 
 If neither `pip_version` or `TOX_PIP_VERSION` is present, the plugin does
 nothing.
+
+
+### Tests
+
+Use `make test` to run the tests, which includes linting and functional tests.
+
+Each of the `tests/*` directories is a "feature" that needs testing. Each
+feature sub-directory contains a tox.ini file that sets pip version in a
+particular way, and then uses a tox command to check the correct pip version
+was installed.

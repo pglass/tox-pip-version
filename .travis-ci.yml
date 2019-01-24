@@ -1,0 +1,20 @@
+language: python
+matrix:
+  include:
+    - python: 3.4
+      env: TOXENV=py34
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+    - python: 3.7
+      env: TOXENV=py37
+# command to install dependencies
+install:
+  - pip install tox-travis
+# command to run tests
+script:
+  - python3 -m venv .venv
+  - source .venv/bin/activate
+  - python setup.py develop
+  - tox

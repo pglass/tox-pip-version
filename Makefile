@@ -34,8 +34,8 @@ bump: $(VENV)
 	@echo
 	@echo "    git push origin master && git push --tags"
 
-release: dist  #test dist
-	$(VENV_ACTIVATE); twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+release: test dist
+	$(VENV_ACTIVATE); twine upload dist/*
 
 clean-dist:
 	rm -rf dist

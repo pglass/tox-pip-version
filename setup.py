@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+long_description = open('README.md').read()
+
 import setuptools
 
 setuptools.setup(
@@ -7,12 +9,26 @@ setuptools.setup(
     author='Paul Glass',
     author_email='pnglass@gmail.com',
     description='Select PIP version to use with tox',
+    long_description=long_description,
     url='https://github.com/pglass/tox-pip-version',
     license='MIT',
     version='0.0.1',
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=['tox>=2.0'],
-    entry_points={'tox': 'pip_version = tox_pip_version.hooks'},
-    package_dir={'baremetal_qe_common': 'baremetal_qe_common'},
+    entry_points={
+        'tox': 'pip_version = tox_pip_version.hooks'
+    },
+    package_dir={
+        'tox_pip_version': 'tox_pip_version'
+    },
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Framework :: tox',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3.6',
+    ],
 )

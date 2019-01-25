@@ -1,8 +1,16 @@
+[![Build Status](https://travis-ci.com/pglass/tox-pip-version.svg?branch=master)](https://travis-ci.com/pglass/tox-pip-version)
+![](https://img.shields.io/pypi/v/tox-pip-version.svg)
+![](https://img.shields.io/pypi/pyversions/tox-pip-version.svg)
+
 Overview
 --------
 
 This is a tox plugin that preinstalls a specific version of pip in each tox
 environment.
+
+```bash
+pip install tox-pip-version
+```
 
 This works around the default behavior of tox/virtualenv that always installs
 the latest version pip. It is an improvment over the `VIRTUALENV_NO_DOWNLOAD=1`

@@ -10,6 +10,7 @@ setuptools.setup(
     author_email='pnglass@gmail.com',
     description='Select PIP version to use with tox',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/pglass/tox-pip-version',
     license='MIT',
     version='0.0.1',
@@ -29,6 +30,10 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 )

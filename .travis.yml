@@ -1,6 +1,8 @@
 language: python
 matrix:
   include:
+    - python: 2.7
+      env: TOXENV=py27
     - python: 3.4
       env: TOXENV=py34
     - python: 3.5
@@ -17,7 +19,6 @@ install:
   - pip install tox-travis
 # command to run tests
 script:
-  - python setup.py develop
-  - make test
+  - make test dist
 notifications:
   email: false

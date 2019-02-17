@@ -9,22 +9,23 @@ PWD = $(shell pwd)
 TOX = tox
 
 $(VENV):
-	virtualenv .venv
-	$(VENV_ACTIVATE); pip install tox bumpversion twine
+	virtualenv $(VENV)
+	$(VENV_ACTIVATE); pip install tox bumpversion twine 'readme_renderer[md]'
 	$(VENV_ACTIVATE); pip install -e .
 
 lint: $(VENV)
-	tox -e flake8
+	$(VENV_ACTIVATE); tox -e flake8
 
-test: clean $(VENV) lint
-	cd $(PWD)/tests/test-two-envs && $(TOX)
-	cd $(PWD)/tests/test-env-inheritance && $(TOX)
-	cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
+test: clean-tests $(VENV) lint
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-two-envs && $(TOX)
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-env-inheritance && $(TOX)
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
 
-dist: clean-dist
+dist: clean-dist $(VENV)
 	python setup.py sdist
 	ls -ls dist
 	tar tzf dist/*
+	$(VENV_ACTIVATE); twine check dist/*
 
 bump: $(VENV)
 	$(VENV_ACTIVATE); bumpversion $(BUMPTYPE)
@@ -34,12 +35,19 @@ bump: $(VENV)
 	@echo
 	@echo "    git push origin master && git push --tags"
 
-release: test dist
+test-release: clean test dist
+	$(VENV_ACTIVATE); twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+release: clean test dist
 	$(VENV_ACTIVATE); twine upload dist/*
 
 clean-dist:
 	rm -rf dist
 
-clean: clean-dist
-	rm -rf $(VENV)
+clean-tests:
 	find tests -name .tox -type d -exec rm -r "{}" +
+
+clean: clean-dist clean-tests
+	rm -rf $(VENV)
+
+

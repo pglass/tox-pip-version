@@ -16,7 +16,17 @@ $(VENV):
 lint: $(VENV)
 	$(VENV_ACTIVATE); tox -e flake8
 
-test: clean-tests $(VENV) lint
+test: clean-tests $(VENV) lint test-tox-3.7 test-tox-3.8
+
+# TODO: Need to refactor to test more pip versions
+test-tox-3.8: clean-tests
+	$(VENV_ACTIVATE); pip install 'tox>=3.8,<3.9'
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-two-envs && $(TOX)
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-env-inheritance && $(TOX)
+	$(VENV_ACTIVATE); cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
+
+test-tox-3.7: clean-tests
+	$(VENV_ACTIVATE); pip install 'tox>=3.7,<3.8'
 	$(VENV_ACTIVATE); cd $(PWD)/tests/test-two-envs && $(TOX)
 	$(VENV_ACTIVATE); cd $(PWD)/tests/test-env-inheritance && $(TOX)
 	$(VENV_ACTIVATE); cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)

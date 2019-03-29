@@ -7,7 +7,7 @@ import tox.venv
 # This will store the pip version specified for each testenv
 PER_ENV_PIP_VERSIONS = {}
 
-TOX_PIP_VERSION_VAR = 'TOX_PIP_VERSION'
+TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
 
 
 @tox.hookimpl
@@ -29,19 +29,22 @@ def tox_testenv_create(venv, action):
         TOX_PIP_VERSION_VAR, os.getenv(TOX_PIP_VERSION_VAR)
     )
 
-    # Use `pip_version` in tox.ini over the environment variable
+    # action.venvname is 'py36', for example.
     #
-    # action.venvname is 'py36', for example
-    # I see action.id == action.venvname - not sure which to use
-    pip_version = PER_ENV_PIP_VERSIONS.get(
-        action.venvname, tox_pip_version_from_env
-    )
+    # tox 3.8 changed action.venvname -> action.name, and removed action.id
+    try:
+        venvname = action.venvname
+    except AttributeError:
+        venvname = action.name
+
+    # Use `pip_version` in tox.ini over the environment variable
+    pip_version = PER_ENV_PIP_VERSIONS.get(venvname, tox_pip_version_from_env)
     if pip_version:
         # Is there a way to output this better? Genuine tox commands show up
         # colorized (as bold white text)...
-        print('%s: pip_version = %s' % (action.venvname, pip_version))
-        package = 'pip==%s' % pip_version
+        print("%s: pip_version = %s" % (venvname, pip_version))
+        package = "pip==%s" % pip_version
 
         # "private" _install method - unstable interface?
-        venv._install([package], extraopts=['-U'], action=action)
+        venv._install([package], extraopts=["-U"], action=action)
     return True

@@ -22,6 +22,11 @@ repeatable builds, but at the cost of using an outdated (possibly vulnerable)
 package. This should be used as a temporary fix for breakages in upstream pip,
 or in conjunction with a regular process to update the version pin.
 
+*Note*: This relies on an [unstable tox plugin interface](
+https://tox.readthedocs.io/en/latest/plugins.html#tox.hookspecs.tox_testenv_create).
+You may experience breakage with new tox versions. If you do, please feel
+free to [report the issue](https://github.com/pglass/tox-pip-version/issues/new)
+on Github.
 
 ### Usage
 

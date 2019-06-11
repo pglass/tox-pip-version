@@ -10,6 +10,19 @@ PER_ENV_PIP_VERSIONS = {}
 TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
 
 
+def _testenv_create(venv, action):
+    # For compatibility with the tox-venv plugin:
+    #
+    # - detect if tox-venv is installed and invoke if so
+    # - use `tryfirst=True` on our hookimpl to run before tox-venv does (no
+    #   more plugins after a plugin returns non-None from its hook function)
+    try:
+        from tox_venv.hooks import tox_testenv_create
+    except ImportError:
+        from tox.venv import tox_testenv_create
+    tox_testenv_create(venv, action)
+
+
 @tox.hookimpl
 def tox_configure(config):
     for env, envconfig in config.envconfigs.items():
@@ -18,9 +31,9 @@ def tox_configure(config):
             PER_ENV_PIP_VERSIONS[env] = pip_version
 
 
-@tox.hookimpl
+@tox.hookimpl(tryfirst=True)
 def tox_testenv_create(venv, action):
-    tox.venv.tox_testenv_create(venv, action)
+    _testenv_create(venv, action)
 
     # Grab the env this way to respect `setenv = TOX_PIP_VERSION`, if present.
     # But, fallback to the process-level environment if not present in `setenv`

@@ -1,0 +1,7 @@
+bumpversion
+flake8
+pytest
+pytest-xdist
+readme_renderer[md]
+tox
+twine

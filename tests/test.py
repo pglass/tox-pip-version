@@ -1,7 +1,12 @@
 import itertools
 import os
 import subprocess
-import tempfile
+import sys
+
+if sys.version_info.major == 2:
+    from backports import tempfile
+else:
+    import tempfile
 
 import pytest
 
@@ -24,6 +29,8 @@ CASES = {
         "env": {"TOX_PIP_VERSION": "18.1"},
     },
 }
+
+PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))
 
 
 def setup_fresh_venv(tag, *extra_commands):
@@ -59,10 +66,7 @@ def _run_case(venv_dir, subdirectory, env=None):
     assert p.returncode == 0, "Failure in directory '%s'" % directory
 
 
-@pytest.mark.parametrize(
-    "tox_version,subdirectory",
-    list(itertools.product(TOX_VERSIONS, CASES.keys()))
-)
+@pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version(tox_version, subdirectory):
     env = CASES[subdirectory]['env']
 
@@ -75,10 +79,7 @@ def test_with_tox_version(tox_version, subdirectory):
         temp_dir.cleanup()
 
 
-@pytest.mark.parametrize(
-    "tox_version,subdirectory",
-    list(itertools.product(TOX_VERSIONS, CASES.keys()))
-)
+@pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version_with_tox_venv(tox_version, subdirectory):
     env = CASES[subdirectory]['env']
 
@@ -90,5 +91,3 @@ def test_with_tox_version_with_tox_venv(tox_version, subdirectory):
         _run_case(venv_dir, subdirectory, env=env)
     finally:
         temp_dir.cleanup()
-
-

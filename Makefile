@@ -10,26 +10,14 @@ TOX = tox
 
 $(VENV):
 	virtualenv $(VENV)
-	$(VENV_ACTIVATE); pip install tox bumpversion twine 'readme_renderer[md]'
+	$(VENV_ACTIVATE); pip install -r dev-requirements.txt
 	$(VENV_ACTIVATE); pip install -e .
 
 lint: $(VENV)
 	$(VENV_ACTIVATE); tox -e flake8
 
-test: clean-tests $(VENV) lint test-tox-3.7 test-tox-3.8
-
-# TODO: Need to refactor to test more pip versions
-test-tox-3.8: clean-tests
-	$(VENV_ACTIVATE); pip install 'tox>=3.8,<3.9'
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-two-envs && $(TOX)
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-env-inheritance && $(TOX)
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
-
-test-tox-3.7: clean-tests
-	$(VENV_ACTIVATE); pip install 'tox>=3.7,<3.8'
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-two-envs && $(TOX)
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-env-inheritance && $(TOX)
-	$(VENV_ACTIVATE); cd $(PWD)/tests/test-environment-variable && ./run-tox.sh $(TOX)
+test: $(VENV) lint
+	$(VENV_ACTIVATE); pytest -v -n auto tests/test.py
 
 dist: clean-dist $(VENV)
 	python setup.py sdist
@@ -53,11 +41,7 @@ release: clean test dist
 
 clean-dist:
 	rm -rf dist
+	rm -rf tox_pip_version.egg-info
 
-clean-tests:
-	find tests -name .tox -type d -exec rm -r "{}" +
-
-clean: clean-dist clean-tests
+clean: clean-dist
 	rm -rf $(VENV)
-
-

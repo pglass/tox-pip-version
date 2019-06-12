@@ -16,8 +16,8 @@ $(VENV):
 lint: $(VENV)
 	$(VENV_ACTIVATE); tox -e flake8
 
-test: clean $(VENV) lint
-	$(VENV_ACTIVATE); pytest -v -n 8 tests/test.py
+test: $(VENV) lint
+	$(VENV_ACTIVATE); pytest -v -n auto tests/test.py
 
 dist: clean-dist $(VENV)
 	python setup.py sdist

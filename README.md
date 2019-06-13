@@ -44,7 +44,7 @@ export TOX_PIP_VERSION=18.1
 tox
 ```
 
-The plugin will install that specific pip into the tox-created virtualenv,
+The plugin will install that version of pip into the tox-created virtualenv,
 just after tox creates the virtualenv, but before dependencies are installed.
 
 The `pip_version` within tox.ini, if present, is always used over the
@@ -53,6 +53,26 @@ environment variable.
 If neither `pip_version` or `TOX_PIP_VERSION` is present, the plugin does
 nothing.
 
+### Version Sets
+
+Version sets (or ranges) are supported, enabling installation of a version of
+pip matching a set of specifiers. There are three basic formats:
+
+- A plain version string, like `pip_version = 19.0`, which installs that exact
+  version.
+- A version with specifiers, like `pip_version = >=19.0`, which installs any
+  version matching the specifier set.
+- A version with specifiers prefixed with "pip", like
+  `pip_version = pip>=19.0` (equivalent to the above)
+
+Here are some more examples,
+
+- `pip_version = pip`: equivalent to `pip install pip` (should install latest)
+- `pip_version = 18.0`: equivalent to `pip install pip==18.0`
+- `pip_version = >=18.0`: equivalent to `pip install pip>=18.0`
+- `pip_version = pip>=18.0`: equivalent to `pip install pip>=18.0`
+- `pip_version = !=18.0,>=10.0`: equivalent to `pip install pip!=18.0,>=10.0`
+- `pip_version = pip!=18.0,>=10.0`: equivalent to `pip install pip!=18.0,>=10.0`
 
 ### Tests
 

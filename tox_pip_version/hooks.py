@@ -9,6 +9,9 @@ PER_ENV_PIP_VERSIONS = {}
 
 TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
 
+# https://www.python.org/dev/peps/pep-0440/#version-specifiers
+VERSION_RANGE_OPERATORS = ('==', '!=', '<', '<=', '>', '>=', '~=', '===')
+
 
 def _testenv_create(venv, action):
     # For compatibility with the tox-venv plugin:
@@ -21,6 +24,18 @@ def _testenv_create(venv, action):
     except ImportError:
         from tox.venv import tox_testenv_create
     tox_testenv_create(venv, action)
+
+
+def get_pip_package_version(pip_version):
+    pip_version = pip_version.lower().strip()
+    # tox.ini: pip_version = pip==19.0
+    if pip_version.startswith('pip'):
+        return pip_version
+    # tox.ini: pip_version = ==19.0
+    if any(pip_version.startswith(op) for op in VERSION_RANGE_OPERATORS):
+        return 'pip%s' % pip_version
+    # tox.ini: pip_version = 19.0
+    return 'pip==%s' % pip_version
 
 
 @tox.hookimpl
@@ -53,10 +68,11 @@ def tox_testenv_create(venv, action):
     # Use `pip_version` in tox.ini over the environment variable
     pip_version = PER_ENV_PIP_VERSIONS.get(venvname, tox_pip_version_from_env)
     if pip_version:
+        package = get_pip_package_version(pip_version)
+
         # Is there a way to output this better? Genuine tox commands show up
         # colorized (as bold white text)...
-        print("%s: pip_version = %s" % (venvname, pip_version))
-        package = "pip==%s" % pip_version
+        print("%s: pip_version is %s" % (venvname, package))
 
         # "private" _install method - unstable interface?
         venv._install([package], extraopts=["-U"], action=action)

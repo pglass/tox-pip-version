@@ -34,6 +34,9 @@ CASES = {
     "test-environment-variable": {
         "env": {"TOX_PIP_VERSION": "18.1"},
     },
+    "test-version-specifiers": {
+        "env": {},
+    }
 }
 
 PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))

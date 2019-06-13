@@ -1,9 +1,8 @@
+import subprocess
+import sys
+
 from packaging.version import Version
 from packaging.specifiers import SpecifierSet
-import functools
-import subprocess
-import re
-import sys
 
 VERSION_RANGE_OPERATORS = ('==', '!=', '<', '<=', '>', '>=', '~=', '===')
 
@@ -19,7 +18,8 @@ def main():
     raw_pip_version = subprocess.check_output(["pip", "--version"]).decode()
     actual_version = Version(raw_pip_version.split(' ')[1])
     if actual_version not in expected_set:
-        print("FAIL: version '%s' not in set '%s'" % (actual_version, expected_set))
+        print("FAIL: version '%s' not in set '%s'"
+              % (actual_version, expected_set))
         return 1
     print("PASS: version '%s' is in set '%s'" % (actual_version, expected_set))
     return 0

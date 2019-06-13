@@ -3,12 +3,12 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 if sys.version_info.major == 2:
     from backports import tempfile
 else:
     import tempfile
-
-import pytest
 
 HERE = os.path.realpath(os.path.dirname(__file__))
 PACKAGE_DIR = os.path.realpath(os.path.join(HERE, '..'))

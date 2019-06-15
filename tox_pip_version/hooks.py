@@ -9,9 +9,6 @@ PER_ENV_PIP_VERSIONS = {}
 
 TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
 
-# https://www.python.org/dev/peps/pep-0440/#version-specifiers
-VERSION_RANGE_OPERATORS = ('==', '!=', '<', '<=', '>', '>=', '~=', '===')
-
 
 def _testenv_create(venv, action):
     # For compatibility with the tox-venv plugin:
@@ -31,9 +28,6 @@ def get_pip_package_version(pip_version):
     # tox.ini: pip_version = pip==19.0
     if pip_version.startswith('pip'):
         return pip_version
-    # tox.ini: pip_version = ==19.0
-    if any(pip_version.startswith(op) for op in VERSION_RANGE_OPERATORS):
-        return 'pip%s' % pip_version
     # tox.ini: pip_version = 19.0
     return 'pip==%s' % pip_version
 

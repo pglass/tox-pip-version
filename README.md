@@ -34,7 +34,7 @@ Install the package and include `pip_version` in your tox.ini
 
 ```tox
 [testenv]
-pip_version = 19.0.1
+pip_version = pip==19.0.1
 ```
 
 Or, set the `TOX_PIP_VERSION` environment variable,
@@ -55,24 +55,19 @@ nothing.
 
 ### Version Sets
 
-Version sets (or ranges) are supported, enabling installation of a version of
-pip matching a set of specifiers. There are three basic formats:
+Version sets/ranges are supported, enabling installation of a version of pip
+matching a set of specifiers. There are two basic formats: a plain version
+number, or the package name with optional [PEP440-compatible](
+https://www.python.org/dev/peps/pep-0440/#version-specifiers) version
+specifiers.
 
-- A plain version string, like `pip_version = 19.0`, which installs that exact
-  version.
-- A version with specifiers, like `pip_version = >=19.0`, which installs any
-  version matching the specifier set.
-- A version with specifiers prefixed with "pip", like
-  `pip_version = pip>=19.0` (equivalent to the above)
-
-Here are some more examples,
-
-- `pip_version = pip`: equivalent to `pip install pip` (should install latest)
-- `pip_version = 18.0`: equivalent to `pip install pip==18.0`
-- `pip_version = >=18.0`: equivalent to `pip install pip>=18.0`
-- `pip_version = pip>=18.0`: equivalent to `pip install pip>=18.0`
-- `pip_version = !=18.0,>=10.0`: equivalent to `pip install pip!=18.0,>=10.0`
-- `pip_version = pip!=18.0,>=10.0`: equivalent to `pip install pip!=18.0,>=10.0`
+| tox.ini                      | effective pip command        |
+| ---------------------------- | ---------------------------- |
+| `pip_version = 19.0`         | `pip install -U pip==19.0`   |
+| `pip_version = pip==19.0`    | `pip install -U pip==19.0`   |
+| `pip_version = pip>=19.0`    | `pip install -U pip>=19.0`   |
+| `pip_version = pip!=19,>18`  | `pip install -U pip!=19,>18` |
+| `pip_version = pip`          | `pip install -U pip`         |
 
 ### Tests
 

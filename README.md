@@ -34,7 +34,7 @@ Install the package and include `pip_version` in your tox.ini
 
 ```tox
 [testenv]
-pip_version = 19.0.1
+pip_version = pip==19.0.1
 ```
 
 Or, set the `TOX_PIP_VERSION` environment variable,
@@ -44,7 +44,7 @@ export TOX_PIP_VERSION=18.1
 tox
 ```
 
-The plugin will install that specific pip into the tox-created virtualenv,
+The plugin will install that version of pip into the tox-created virtualenv,
 just after tox creates the virtualenv, but before dependencies are installed.
 
 The `pip_version` within tox.ini, if present, is always used over the
@@ -53,6 +53,21 @@ environment variable.
 If neither `pip_version` or `TOX_PIP_VERSION` is present, the plugin does
 nothing.
 
+### Version Sets
+
+Version sets/ranges are supported, enabling installation of a version of pip
+matching a set of specifiers. There are two basic formats: a plain version
+number, or the package name with optional [PEP440-compatible](
+https://www.python.org/dev/peps/pep-0440/#version-specifiers) version
+specifiers.
+
+| tox.ini                      | effective pip command        |
+| ---------------------------- | ---------------------------- |
+| `pip_version = 19.0`         | `pip install -U pip==19.0`   |
+| `pip_version = pip==19.0`    | `pip install -U pip==19.0`   |
+| `pip_version = pip>=19.0`    | `pip install -U pip>=19.0`   |
+| `pip_version = pip!=19,>18`  | `pip install -U pip!=19,>18` |
+| `pip_version = pip`          | `pip install -U pip`         |
 
 ### Tests
 

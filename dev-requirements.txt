@@ -1,6 +1,7 @@
 backports.tempfile
 bumpversion
 flake8
+packaging
 pytest
 pytest-xdist
 readme_renderer[md]

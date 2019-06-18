@@ -3,12 +3,12 @@ import os
 import subprocess
 import sys
 
+import pytest
+
 if sys.version_info.major == 2:
     from backports import tempfile
 else:
     import tempfile
-
-import pytest
 
 HERE = os.path.realpath(os.path.dirname(__file__))
 PACKAGE_DIR = os.path.realpath(os.path.join(HERE, '..'))
@@ -34,6 +34,9 @@ CASES = {
     "test-environment-variable": {
         "env": {"TOX_PIP_VERSION": "18.1"},
     },
+    "test-version-specifiers": {
+        "env": {},
+    }
 }
 
 PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))

@@ -15,12 +15,17 @@ def _testenv_create(venv, action):
     #
     # - detect if tox-venv is installed and invoke if so
     # - use `tryfirst=True` on our hookimpl to run before tox-venv does (no
-    #   more plugins after a plugin returns non-None from its hook function)
+    #   plugins run after a plugin returns non-None from its hook function)
     try:
         from tox_venv.hooks import tox_testenv_create
+
+        # tox-venv may not create the venv (like if the venv is python 2)
+        # so fallback to tox's default
+        finished = tox_testenv_create(venv, action)
+        if not finished:
+            tox.venv.tox_testenv_create(venv, action)
     except ImportError:
-        from tox.venv import tox_testenv_create
-    tox_testenv_create(venv, action)
+        tox.venv.tox_testenv_create(venv, action)
 
 
 def get_pip_package_version(pip_version):

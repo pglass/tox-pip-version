@@ -36,7 +36,13 @@ CASES = {
     },
     "test-version-specifiers": {
         "env": {},
-    }
+    },
+    "test-py27": {
+        # So env=None inherits from the parent process, whereas env={} doesn't.
+        # I have this inherit because it makes pyenv interpreters available and
+        # we need py27 present for this test.
+        "env": None,
+    },
 }
 
 PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))
@@ -63,12 +69,28 @@ def _run_case(venv_dir, subdirectory, env=None):
     activate = os.path.join(venv_dir, 'bin', 'activate')
     command = '. %s; pip freeze; tox --workdir %s' % (activate, tox_work_dir)
     print("Running: '%s'" % command)
-    subprocess.check_call(command, cwd=directory, shell=True, env=env or {})
+    subprocess.check_call(command, cwd=directory, shell=True, env=env)
+
+
+def has_python_exe(exe):
+    try:
+        subprocess.check_output([exe, '--version'], stderr=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
+def skip_if_missing_python(exe):
+    if not has_python_exe(exe):
+        pytest.skip('Python executable %s not found' % exe)
 
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version(tox_version, subdirectory):
-    env = CASES[subdirectory]['env']
+    if 'py27' in subdirectory:
+        skip_if_missing_python('python2.7')
+
+    env = CASES[subdirectory].get('env')
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
     try:
         # Sometimes see an error like,
@@ -89,7 +111,10 @@ def test_with_tox_version(tox_version, subdirectory):
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version_with_tox_venv(tox_version, subdirectory):
-    env = CASES[subdirectory]['env']
+    if 'py27' in subdirectory:
+        skip_if_missing_python('python2.7')
+
+    env = CASES[subdirectory].get('env')
     tox_venv_version = TOX_TO_TOX_VENV_VERSIONS[tox_version]
 
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)

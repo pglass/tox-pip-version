@@ -11,21 +11,31 @@ TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
 
 
 def _testenv_create(venv, action):
-    # For compatibility with the tox-venv plugin:
+    # For compatibility with the tox-venv and tox-conda plugins:
     #
-    # - detect if tox-venv is installed and invoke if so
-    # - use `tryfirst=True` on our hookimpl to run before tox-venv does (no
-    #   plugins run after a plugin returns non-None from its hook function)
+    # 1. Detect if tox-venv is installed and invoke if so.
+    # 2. Else, detect if tox-conda is installed and invoke if so
+    # 3. Else, neither is installed, so proceed as normal
+    #
+    # We use `tryfirst=True` on our hookimpl to run before tox-venv does (no
+    # plugins run after a plugin returns non-None from its hook function)
     try:
         from tox_venv.hooks import tox_testenv_create
 
         # tox-venv may not create the venv (like if the venv is python 2)
-        # so fallback to tox's default
-        finished = tox_testenv_create(venv, action)
-        if not finished:
-            tox.venv.tox_testenv_create(venv, action)
+        if tox_testenv_create(venv, action):
+            return
     except ImportError:
-        tox.venv.tox_testenv_create(venv, action)
+        pass
+
+    try:
+        from tox_conda.plugin import tox_testenv_create
+        if tox_testenv_create(venv, action):
+            return
+    except ImportError:
+        pass
+
+    tox.venv.tox_testenv_create(venv, action)
 
 
 def get_pip_package_version(pip_version):

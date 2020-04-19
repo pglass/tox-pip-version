@@ -2,6 +2,30 @@
 ![](https://img.shields.io/pypi/v/tox-pip-version.svg)
 ![](https://img.shields.io/pypi/pyversions/tox-pip-version.svg)
 
+**Deprecated**: With virtualenv version 20+, virtualenv supports installing a specific
+version of pip as part of virtualenv creation. **The `tox-pip-version` plugin is no longer
+required and is therefore deprecated.**
+
+Here is an example of installing a specific version of pip with tox:
+
+```ini
+[tox]
+envlist = py36
+minversion = 3.10.0  # Ensure the `download` option is supported
+requires = virtualenv >= 20.0
+skipsdist = True
+
+[testenv]
+download = true
+setenv =
+    VIRTUALENV_PIP=19.2.3
+    VIRTUALENV_SEEDER=pip
+    VIRTUALENV_DOWNLOAD=1
+```
+
+For those currently using tox-venv, simply specify `VIRTUALENV_CREATOR=venv`
+as an additional environment variable.
+
 Overview
 --------
 

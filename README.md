@@ -68,6 +68,7 @@ specifiers.
 | `pip_version = pip>=19.0`    | `pip install -U pip>=19.0`   |
 | `pip_version = pip!=19,>18`  | `pip install -U pip!=19,>18` |
 | `pip_version = pip`          | `pip install -U pip`         |
+| `pip_version = pip@git+https://github.com/pypa/pip@5eae3c9` | `pip install -U pip@git+https://github.com/pypa/pip@5eae3c9` |
 
 ### Tests
 

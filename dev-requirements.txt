@@ -4,6 +4,7 @@ flake8
 packaging
 pytest
 pytest-xdist
-readme_renderer[md]
+readme_renderer[md];python_version>="3.5"
+readme_renderer[md]<25.0;python_version<"3.5"
 tox
 twine

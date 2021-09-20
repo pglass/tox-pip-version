@@ -18,10 +18,10 @@ setuptools.setup(
     include_package_data=True,
     install_requires=['tox>=2.0'],
     entry_points={
-        'tox': 'pip_version = tox_pip_version.hooks'
+        'tox': 'setuptools_version = tox_setuptools_version.hooks'
     },
     package_dir={
-        'tox_pip_version': 'tox_pip_version'
+        'tox_setuptools_version': 'tox_setuptools_version'
     },
     classifiers=[
         'Development Status :: 4 - Beta',

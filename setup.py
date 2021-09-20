@@ -11,7 +11,7 @@ setuptools.setup(
     description='Select SETUPTOOLS version to use with tox',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/pglass/tox-pip-version',
+    url='https://github.com/LvffY/tox-setuptools-version',
     license='MIT',
     version='0.0.0.1',
     packages=setuptools.find_packages(),

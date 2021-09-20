@@ -9,10 +9,13 @@ jobs:
         - 3.8
         - 3.9
       # command to install dependencies
+    before_install:
+      - pip install --upgrade pip
     install:
       - pip install tox-travis
     # command to run tests
     script:
+      - tox -e black,flake8
       - tox
       - git push origin HEAD:$TRAVIS_PULL_REQUEST_BRANCH
 notifications:

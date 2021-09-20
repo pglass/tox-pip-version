@@ -10,7 +10,7 @@ jobs:
         - 3.9
     # command to install dependencies
     before_install:
-      - pip install --upgrade pip setuptools_rust
+      - pip install --upgrade pip
     install:
       - pip install tox-travis
     # command to run tests

@@ -22,10 +22,10 @@ jobs:
         - python: 3.9
           env: TOXENV=py39
       # command to install dependencies
-      install:
-        - pip install tox-travis
-      # command to run tests
-      script:
-        - make test dist
+    install:
+      - pip install tox-travis
+    # command to run tests
+    script:
+      - make test dist
 notifications:
   email: false

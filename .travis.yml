@@ -25,5 +25,7 @@ jobs:
       username: __token__
       password: $TWINE_DEV_PASSWORD
       server: https://test.pypi.org/project/tox-setuptools-version
+      on:
+        condition: $TRAVIS_PULL_REQUEST_BRANCH != "master"
 notifications:
   email: false

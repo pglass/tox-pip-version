@@ -17,6 +17,7 @@ jobs:
       - pip install tox-travis
     # command to run tests
     script:
-      - make test dist
+      - tox
+      - git push origin HEAD:$TRAVIS_PULL_REQUEST_BRANCH
 notifications:
   email: false

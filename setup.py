@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/LvffY/tox-setuptools-version",
     license="MIT",
-    version="0.0.0.1",
+    version="0.0.0.1.dev0",
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=["tox>=2.0"],
@@ -31,4 +31,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
+    python_requires=">=3.6",
 )

@@ -9,6 +9,7 @@ jobs:
     # command to install dependencies
     before_install:
       - pip install --upgrade pip
+      - pip install codecov
     install:
       - pip install tox-travis
     # command to run tests
@@ -17,5 +18,7 @@ jobs:
       - tox
     after_script:
       - git push origin HEAD:$TRAVIS_PULL_REQUEST_BRANCH
+    after_success:
+      - codecov
 notifications:
   email: false

@@ -37,12 +37,6 @@ CASES = {
     "test-version-specifiers": {
         "env": {},
     },
-    "test-py27": {
-        # So env=None inherits from the parent process, whereas env={} doesn't.
-        # I have this inherit because it makes pyenv interpreters available and
-        # we need py27 present for this test.
-        "env": None,
-    },
 }
 
 PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))

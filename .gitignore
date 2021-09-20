@@ -92,3 +92,6 @@ ENV/
 node_modules
 
 .pytest_cache/
+
+## Remove intellij files
+.idea

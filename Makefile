@@ -41,7 +41,7 @@ release: clean test dist
 
 clean-dist:
 	rm -rf dist
-	rm -rf tox_pip_version.egg-info
+	rm -rf tox_setuptools_version.egg-info
 
 clean: clean-dist
 	rm -rf $(VENV)

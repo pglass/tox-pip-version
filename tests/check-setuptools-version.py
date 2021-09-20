@@ -15,8 +15,8 @@ def to_specifer_set(raw_version):
 
 def main():
     expected_set = to_specifer_set(sys.argv[1])
-    raw_pip_version = subprocess.check_output(["pip", "--version"]).decode()
-    actual_version = Version(raw_pip_version.split(' ')[1])
+    raw_setuptools_version = subprocess.check_output(["pip", "show", "setuptools"]).decode()
+    actual_version = Version(raw_setuptools_version.split('\n')[1].split(':')[1].strip())
     if actual_version not in expected_set:
         print("FAIL: version '%s' not in set '%s'"
               % (actual_version, expected_set))

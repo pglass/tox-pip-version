@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/LvffY/tox-setuptools-version.svg?branch=master)](https://travis-ci.com/LvffY/tox-setuptools-version)
+[![Build Status](https://app.travis-ci.com/LvffY/tox-setuptools-version.svg?branch=master)](https://app.travis-ci.com/LvffY/tox-setuptools-version)
 ![](https://img.shields.io/pypi/v/tox-setuptools-version.svg)
 ![](https://img.shields.io/pypi/pyversions/tox-setuptools-version.svg)
 

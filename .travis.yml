@@ -1,13 +1,11 @@
 jobs:
   include:
     language: python
-    matrix:
-      fast_finish: true
-      include:
-        - 3.6
-        - 3.7
-        - 3.8
-        - 3.9
+    python:
+      - 3.6
+      - 3.7
+      - 3.8
+      - 3.9
     # command to install dependencies
     before_install:
       - pip install --upgrade pip
@@ -17,6 +15,7 @@ jobs:
     script:
       - tox -e black,flake8
       - tox
+    after_script:
       - git push origin HEAD:$TRAVIS_PULL_REQUEST_BRANCH
 notifications:
   email: false

@@ -1,29 +1,29 @@
 jobs:
   include:
-    - language: python
-      python:
-        - 3.6
-        - 3.7
-        - 3.8
-        - 3.9
-      # command to install dependencies
-      before_install:
-        - pip install --upgrade pip
-        - pip install codecov
-      install:
-        - pip install tox-travis
-      # command to run tests
-      script:
-        - tox -e black,flake8
-        - tox
-      after_script:
-        - ./travis/git_push.sh
-      after_success:
-        - codecov
-      deploy:
-        provider: pypi
-        username: __token__
-        password: $TWINE_DEV_PASSWORD
-        server: https://test.pypi.org/project/tox-setuptools-version
+    language: python
+    python:
+      - 3.6
+      - 3.7
+      - 3.8
+      - 3.9
+    # command to install dependencies
+    before_install:
+      - pip install --upgrade pip
+      - pip install codecov
+    install:
+      - pip install tox-travis
+    # command to run tests
+    script:
+      - tox -e black,flake8
+      - tox
+    after_script:
+      - ./travis/git_push.sh
+    after_success:
+      - codecov
+    deploy:
+      provider: pypi
+      username: __token__
+      password: $TWINE_DEV_PASSWORD
+      server: https://test.pypi.org/project/tox-setuptools-version
 notifications:
   email: false

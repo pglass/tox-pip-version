@@ -20,7 +20,7 @@ jobs:
         - python: 3.8
           env: TOXENV=py38
         - python: 3.9
-      env: TOXENV=py39
+          env: TOXENV=py39
       # command to install dependencies
       install:
         - pip install tox-travis

@@ -32,7 +32,7 @@ CASES = {
         "env": {},
     },
     "test-environment-variable": {
-        "env": {"TOX_SETUPTOOLS_VERSION": "18.1"},
+        "env": {"TOX_SETUPTOOLS_VERSION": "58.0.0"},
     },
     "test-version-specifiers": {
         "env": {},

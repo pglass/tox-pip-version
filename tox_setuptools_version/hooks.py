@@ -30,6 +30,7 @@ def _testenv_create(venv, action):
 
     try:
         from tox_conda.plugin import tox_testenv_create
+
         if tox_testenv_create(venv, action):
             return
     except ImportError:
@@ -41,10 +42,10 @@ def _testenv_create(venv, action):
 def get_setuptools_package_version(setuptools_version):
     setuptools_version = setuptools_version.lower().strip()
     # tox.ini: setuptools_version = setuptools==19.0
-    if setuptools_version.startswith('setuptools'):
+    if setuptools_version.startswith("setuptools"):
         return setuptools_version
     # tox.ini: setuptools_version = 19.0
-    return 'setuptools==%s' % setuptools_version
+    return "setuptools==%s" % setuptools_version
 
 
 @tox.hookimpl
@@ -75,7 +76,9 @@ def tox_testenv_create(venv, action):
         venvname = action.name
 
     # Use `setuptools_version` in tox.ini over the environment variable
-    setuptools_version = PER_ENV_SETUPTOOLS_VERSIONS.get(venvname, tox_setuptools_version_from_env)
+    setuptools_version = PER_ENV_SETUPTOOLS_VERSIONS.get(
+        venvname, tox_setuptools_version_from_env
+    )
     if setuptools_version:
         package = get_setuptools_package_version(setuptools_version)
 

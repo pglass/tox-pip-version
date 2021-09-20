@@ -11,7 +11,7 @@ else:
     import tempfile
 
 HERE = os.path.realpath(os.path.dirname(__file__))
-PACKAGE_DIR = os.path.realpath(os.path.join(HERE, '..'))
+PACKAGE_DIR = os.path.realpath(os.path.join(HERE, ".."))
 
 TOX_VERSIONS = [
     ">=3.7,<3.8",
@@ -50,31 +50,31 @@ PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))
 
 def setup_fresh_venv(tag, *extra_commands):
     temp_dir = tempfile.TemporaryDirectory(prefix=tag)
-    venv_dir = os.path.join(temp_dir.name, 'venv')
+    venv_dir = os.path.join(temp_dir.name, "venv")
     subprocess.check_call(["virtualenv", venv_dir])
-    print('Created venv: %s' % venv_dir)
+    print("Created venv: %s" % venv_dir)
     return temp_dir, venv_dir
 
 
 def install_deps(venv_dir, *deps):
     """Install a dependency into the virtualenv"""
-    pip = os.path.join(venv_dir, 'bin', 'pip')
+    pip = os.path.join(venv_dir, "bin", "pip")
     cmd = [pip, "install"] + list(deps)
     subprocess.check_call(cmd, cwd=venv_dir, env={})
 
 
 def _run_case(venv_dir, subdirectory, env=None):
-    tox_work_dir = os.path.join(venv_dir, '.tox')
+    tox_work_dir = os.path.join(venv_dir, ".tox")
     directory = os.path.join(HERE, subdirectory)
-    activate = os.path.join(venv_dir, 'bin', 'activate')
-    command = '. %s; pip freeze; tox --workdir %s' % (activate, tox_work_dir)
+    activate = os.path.join(venv_dir, "bin", "activate")
+    command = ". %s; pip freeze; tox --workdir %s" % (activate, tox_work_dir)
     print("Running: '%s'" % command)
     subprocess.check_call(command, cwd=directory, shell=True, env=env)
 
 
 def has_python_exe(exe):
     try:
-        subprocess.check_output([exe, '--version'], stderr=subprocess.PIPE)
+        subprocess.check_output([exe, "--version"], stderr=subprocess.PIPE)
         return True
     except subprocess.CalledProcessError:
         return False
@@ -82,15 +82,15 @@ def has_python_exe(exe):
 
 def skip_if_missing_python(exe):
     if not has_python_exe(exe):
-        pytest.skip('Python executable %s not found' % exe)
+        pytest.skip("Python executable %s not found" % exe)
 
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version(tox_version, subdirectory):
-    if 'py27' in subdirectory:
-        skip_if_missing_python('python2.7')
+    if "py27" in subdirectory:
+        skip_if_missing_python("python2.7")
 
-    env = CASES[subdirectory].get('env')
+    env = CASES[subdirectory].get("env")
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
     try:
         # Sometimes see an error like,
@@ -111,17 +111,15 @@ def test_with_tox_version(tox_version, subdirectory):
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version_with_tox_venv(tox_version, subdirectory):
-    if 'py27' in subdirectory:
-        skip_if_missing_python('python2.7')
+    if "py27" in subdirectory:
+        skip_if_missing_python("python2.7")
 
-    env = CASES[subdirectory].get('env')
+    env = CASES[subdirectory].get("env")
     tox_venv_version = TOX_TO_TOX_VENV_VERSIONS[tox_version]
 
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
     try:
-        install_deps(
-            venv_dir, "tox%s" % tox_version, "tox-venv%s" % tox_venv_version
-        )
+        install_deps(venv_dir, "tox%s" % tox_version, "tox-venv%s" % tox_venv_version)
         install_deps(venv_dir, PACKAGE_DIR)
         _run_case(venv_dir, subdirectory, env=env)
     finally:

@@ -4,10 +4,10 @@ import tox
 import tox.venv
 
 
-# This will store the pip version specified for each testenv
-PER_ENV_PIP_VERSIONS = {}
+# This will store the setuptools version specified for each testenv
+PER_ENV_SETUPTOOLS_VERSIONS = {}
 
-TOX_PIP_VERSION_VAR = "TOX_PIP_VERSION"
+TOX_SETUPTOOLS_VERSION_VAR = "TOX_SETUPTOOLS_VERSION"
 
 
 def _testenv_create(venv, action):
@@ -38,32 +38,32 @@ def _testenv_create(venv, action):
     tox.venv.tox_testenv_create(venv, action)
 
 
-def get_pip_package_version(pip_version):
-    pip_version = pip_version.lower().strip()
-    # tox.ini: pip_version = pip==19.0
-    if pip_version.startswith('pip'):
-        return pip_version
-    # tox.ini: pip_version = 19.0
-    return 'pip==%s' % pip_version
+def get_setuptools_package_version(setuptools_version):
+    setuptools_version = setuptools_version.lower().strip()
+    # tox.ini: setuptools_version = setuptools==19.0
+    if setuptools_version.startswith('setuptools'):
+        return setuptools_version
+    # tox.ini: setuptools_version = 19.0
+    return 'setuptools==%s' % setuptools_version
 
 
 @tox.hookimpl
 def tox_configure(config):
     for env, envconfig in config.envconfigs.items():
-        pip_version = envconfig._reader.getstring("pip_version")
-        if pip_version:
-            PER_ENV_PIP_VERSIONS[env] = pip_version
+        setuptools_version = envconfig._reader.getstring("setuptools_version")
+        if setuptools_version:
+            PER_ENV_SETUPTOOLS_VERSIONS[env] = setuptools_version
 
 
 @tox.hookimpl(tryfirst=True)
 def tox_testenv_create(venv, action):
     _testenv_create(venv, action)
 
-    # Grab the env this way to respect `setenv = TOX_PIP_VERSION`, if present.
+    # Grab the env this way to respect `setenv = TOX_SETUPTOOLS_VERSION`, if present.
     # But, fallback to the process-level environment if not present in `setenv`
     env = venv._get_os_environ()
-    tox_pip_version_from_env = env.get(
-        TOX_PIP_VERSION_VAR, os.getenv(TOX_PIP_VERSION_VAR)
+    tox_setuptools_version_from_env = env.get(
+        TOX_SETUPTOOLS_VERSION_VAR, os.getenv(TOX_SETUPTOOLS_VERSION_VAR)
     )
 
     # action.venvname is 'py36', for example.
@@ -74,14 +74,14 @@ def tox_testenv_create(venv, action):
     except AttributeError:
         venvname = action.name
 
-    # Use `pip_version` in tox.ini over the environment variable
-    pip_version = PER_ENV_PIP_VERSIONS.get(venvname, tox_pip_version_from_env)
-    if pip_version:
-        package = get_pip_package_version(pip_version)
+    # Use `setuptools_version` in tox.ini over the environment variable
+    setuptools_version = PER_ENV_SETUPTOOLS_VERSIONS.get(venvname, tox_setuptools_version_from_env)
+    if setuptools_version:
+        package = get_setuptools_package_version(setuptools_version)
 
         # Is there a way to output this better? Genuine tox commands show up
         # colorized (as bold white text)...
-        print("%s: pip_version is %s" % (venvname, package))
+        print("%s: setuptools_version is %s" % (venvname, package))
 
         # "private" _install method - unstable interface?
         venv._install([package], extraopts=["-U"], action=action)

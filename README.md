@@ -17,11 +17,6 @@ the latest version setuptools. It is an improvement over the `VIRTUALENV_NO_DOWN
 option that does not install the latest version, but could result in usage of
 an outdated version of setuptools.
 
-*Recommendation*: Do not pin the pip version long term. You get more stable
-repeatable builds, but at the cost of using an outdated (possibly vulnerable)
-package. This should be used as a temporary fix for breakages in upstream pip,
-or in conjunction with a regular process to update the version pin.
-
 *Note*: This relies on an [unstable tox plugin interface](
 https://tox.readthedocs.io/en/latest/plugins.html#tox.hookspecs.tox_testenv_create).
 You may experience breakage with new tox versions. If you do, please feel
@@ -63,12 +58,12 @@ number, or the package name with optional [PEP440-compatible](
 https://www.python.org/dev/peps/pep-0440/#version-specifiers) version
 specifiers.
 
-| tox.ini                      | effective setuptools command        |
+| tox.ini                      | effective pip command        |
 | ---------------------------- | ---------------------------- |
-| `setuptools_version = 19.0`         | `pip install -U setuptools==19.0`   |
-| `setuptools_version = setuptools==19.0`    | `pip install -U setuptools==19.0`   |
-| `setuptools_version = setuptools>=19.0`    | `pip install -U setuptools>=19.0`   |
-| `setuptools_version = setuptools!=19,>18`  | `pip install -U setuptools!=19,>18` |
+| `setuptools_version = 58.0`         | `pip install -U setuptools==19.0`   |
+| `setuptools_version = setuptools==58.0`    | `pip install -U setuptools==58.0`   |
+| `setuptools_version = setuptools>=58.0`    | `pip install -U setuptools>=58.0`   |
+| `setuptools_version = setuptools!=58.0,>57`  | `pip install -U setuptools!=58.0,>57` |
 | `setuptools_version = setuptools`          | `pip install -U setuptools`         |
 | `setuptools_version = setuptools@git+https://github.com/pypa/setuptools@0168ac6` | `setuptools@git+https://github.com/pypa/setuptools@0168ac6` |
 

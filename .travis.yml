@@ -17,7 +17,7 @@ jobs:
       - tox -e black,flake8
       - tox
     after_script:
-      - ./travis/git_push.sh
+      - ./.travis/git_push.sh
     after_success:
       - codecov
     deploy:
@@ -26,6 +26,7 @@ jobs:
       password: $TWINE_DEV_PASSWORD
       server: https://test.pypi.org/project/tox-setuptools-version
       on:
-        condition: $TRAVIS_PULL_REQUEST_BRANCH != "master"
+        all_branches: true
+        condition: $TRAVIS_BRANCH != "master"
 notifications:
   email: false

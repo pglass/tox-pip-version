@@ -11,4 +11,4 @@ git_url_with_token=$(git remote get-url origin | sed -e "s/github.com/${GITHUB_A
 git remote set-url origin $git_url_with_token
 
 ## Push modifications
-git push origin HEAD:$TRAVIS_PULL_REQUEST_BRANCH
+git push origin HEAD:$TRAVIS_BRANCH

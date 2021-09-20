@@ -14,7 +14,7 @@ $(VENV):
 	$(VENV_ACTIVATE); pip install -e .
 
 lint: $(VENV)
-	$(VENV_ACTIVATE); tox -e flake8
+	$(VENV_ACTIVATE); tox -e black,flake8
 
 test: $(VENV) lint
 	$(VENV_ACTIVATE); pytest -v -n auto tests/test.py

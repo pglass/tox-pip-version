@@ -1,21 +1,21 @@
-[![Build Status](https://travis-ci.com/pglass/tox-pip-version.svg?branch=master)](https://travis-ci.com/pglass/tox-pip-version)
-![](https://img.shields.io/pypi/v/tox-pip-version.svg)
-![](https://img.shields.io/pypi/pyversions/tox-pip-version.svg)
+[![Build Status](https://travis-ci.com/LvffY/tox-setuptools-version.svg?branch=master)](https://travis-ci.com/LvffY/tox-setuptools-version)
+![](https://img.shields.io/pypi/v/tox-setuptools-version.svg)
+![](https://img.shields.io/pypi/pyversions/tox-setuptools-version.svg)
 
 Overview
 --------
 
-This is a tox plugin that preinstalls a specific version of pip in each tox
+This is a tox plugin that preinstalls a specific version of setuptools in each tox
 environment.
 
 ```bash
-pip install tox-pip-version
+pip install tox-setuptools-version
 ```
 
 This works around the default behavior of tox/virtualenv that always installs
-the latest version pip. It is an improvment over the `VIRTUALENV_NO_DOWNLOAD=1`
+the latest version setuptools. It is an improvement over the `VIRTUALENV_NO_DOWNLOAD=1`
 option that does not install the latest version, but could result in usage of
-an outdated version of pip.
+an outdated version of setuptools.
 
 *Recommendation*: Do not pin the pip version long term. You get more stable
 repeatable builds, but at the cost of using an outdated (possibly vulnerable)
@@ -25,32 +25,34 @@ or in conjunction with a regular process to update the version pin.
 *Note*: This relies on an [unstable tox plugin interface](
 https://tox.readthedocs.io/en/latest/plugins.html#tox.hookspecs.tox_testenv_create).
 You may experience breakage with new tox versions. If you do, please feel
-free to [report the issue](https://github.com/pglass/tox-pip-version/issues/new)
+free to [report the issue](https://github.com/LvffY/tox-setuptools-version/issues/new)
 on Github.
+
+This repository is based on a fork from the plugin [tox-pip-version](https://github.com/pglass/tox-pip-version), you should probably go to see his job too.
 
 ### Usage
 
-Install the package and include `pip_version` in your tox.ini
+Install the package and include `setuptools_version` in your tox.ini
 
 ```tox
 [testenv]
-pip_version = pip==19.0.1
+setuptools_version = setuptools_version<58
 ```
 
-Or, set the `TOX_PIP_VERSION` environment variable,
+Or, set the `TOX_SETUPTOOLS_VERSION` environment variable,
 
 ```bash
-export TOX_PIP_VERSION=18.1
+export TOX_SETUPTOOLS_VERSION=57.2.4
 tox
 ```
 
-The plugin will install that version of pip into the tox-created virtualenv,
+The plugin will install that version of setuptools into the tox-created virtualenv,
 just after tox creates the virtualenv, but before dependencies are installed.
 
-The `pip_version` within tox.ini, if present, is always used over the
+The `setuptools_version` within tox.ini, if present, is always used over the
 environment variable.
 
-If neither `pip_version` or `TOX_PIP_VERSION` is present, the plugin does
+If neither `setuptools_version` or `TOX_SETUPTOLLS_VERSION` is present, the plugin does
 nothing.
 
 ### Version Sets
@@ -61,14 +63,14 @@ number, or the package name with optional [PEP440-compatible](
 https://www.python.org/dev/peps/pep-0440/#version-specifiers) version
 specifiers.
 
-| tox.ini                      | effective pip command        |
+| tox.ini                      | effective setuptools command        |
 | ---------------------------- | ---------------------------- |
-| `pip_version = 19.0`         | `pip install -U pip==19.0`   |
-| `pip_version = pip==19.0`    | `pip install -U pip==19.0`   |
-| `pip_version = pip>=19.0`    | `pip install -U pip>=19.0`   |
-| `pip_version = pip!=19,>18`  | `pip install -U pip!=19,>18` |
-| `pip_version = pip`          | `pip install -U pip`         |
-| `pip_version = pip@git+https://github.com/pypa/pip@5eae3c9` | `pip install -U pip@git+https://github.com/pypa/pip@5eae3c9` |
+| `setuptools_version = 19.0`         | `pip install -U setuptools==19.0`   |
+| `setuptools_version = setuptools==19.0`    | `pip install -U setuptools==19.0`   |
+| `setuptools_version = setuptools>=19.0`    | `pip install -U setuptools>=19.0`   |
+| `setuptools_version = setuptools!=19,>18`  | `pip install -U setuptools!=19,>18` |
+| `setuptools_version = setuptools`          | `pip install -U setuptools`         |
+| `setuptools_version = setuptools@git+https://github.com/pypa/setuptools@0168ac6` | `setuptools@git+https://github.com/pypa/setuptools@0168ac6` |
 
 ### Tests
 

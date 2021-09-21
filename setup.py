@@ -7,6 +7,7 @@ import setuptools
 setuptools.setup(
     name="tox-setuptools-version",
     author="LvffY",
+    author_email="louberger@hotmail.fr",
     description="Select SETUPTOOLS version to use with tox",
     long_description=long_description,
     long_description_content_type="text/markdown",

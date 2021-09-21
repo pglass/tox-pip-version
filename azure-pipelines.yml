@@ -455,6 +455,5 @@ stages:
               script: |
                 tox -e release
             env:
-              TWINE_REPOSITORY_URL: "$(TWINE_REPOSITORY_URL)"
               TWINE_USERNAME: "__token__"
               TWINE_PASSWORD: "$(TWINE_PASSWORD)"

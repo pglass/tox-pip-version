@@ -36,15 +36,15 @@ parameters:
       Python36:
         python_version: '3.6'
         tox_env: 'py36'
-      Python37:
-        python_version: '3.7'
-        tox_env: 'py37'
-      Python38:
-        python_version: '3.8'
-        tox_env: 'py38'
-      Python39:
-        python_version: '3.9'
-        tox_env: 'py39'
+#      Python37:
+#        python_version: '3.7'
+#        tox_env: 'py37'
+#      Python38:
+#        python_version: '3.8'
+#        tox_env: 'py38'
+#      Python39:
+#        python_version: '3.9'
+#        tox_env: 'py39'
 
   - name: test_file_pattern
     displayName: "Pattern to look at for test results files"

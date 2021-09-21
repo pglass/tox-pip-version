@@ -71,16 +71,6 @@ parameters:
     type: string
     default: 'coverage'
 
-  - name: default_python_version
-    displayName: "Python version to use for building package, not testing"
-    type: string
-    default: '3.8'
-    values:
-      - 3.6
-      - 3.7
-      - 3.8
-      - 3.9
-
   - name: sonarqube_connection_name
     type: string
     default: "sonarqube"
@@ -187,11 +177,8 @@ stages:
     displayName: Sonar analysis
     condition: succeeded()
     variables:
-      SONAR_BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
-      sonarCloudEndpointName: 'sonarqube'
+      BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
       sonarCloudOrganization: 'lvffy'
-      sonarCloudProjectKey: 'LvffY_tox-setuptools-version'
-      sonarCloudProjectName: 'tox-setuptools-version'
     pool:
       vmImage: ubuntu-latest
     dependsOn:
@@ -224,16 +211,15 @@ stages:
               ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
               ## With the cut mechanic, we get only the git branch name, not the ref
               script: |
-                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
                   git checkout $branch
                   git branch --set-upstream-to=origin/$branch
             env:
-              GIT_BRANCH: $(Build.SourceBranch)
+              GIT_BRANCH: $(BRANCH)
 
           - task: UsePythonVersion@0
-            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            displayName: 'Install Python 3.9'
             inputs:
-              versionSpec: '${{ parameters.default_python_version }}'
+              versionSpec: '3.9'
 
           - task: Bash@3
             displayName: 'Install pip & tox'
@@ -262,8 +248,8 @@ stages:
           - task: SonarCloudPrepare@1
             displayName: 'Prepare SonarQube'
             inputs:
-              SonarCloud: 'sonarqube'
-              organization: '$(sonarCloudOrganization)'
+              SonarCloud: ${{ parameters.sonarqube_connection_name }}
+              organization: $(sonarCloudOrganization)
               scannerMode: 'CLI'
               configMode: 'file'
               # This sonar-project.properties file is usually placed at the root level of the repository. However, you can define your own path.
@@ -327,9 +313,9 @@ stages:
               GIT_BRANCH: $(Build.SourceBranch)
 
           - task: UsePythonVersion@0
-            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            displayName: 'Install Python 3.9'
             inputs:
-              versionSpec: '${{ parameters.default_python_version }}'
+              versionSpec: '3.9'
 
           - task: Bash@3
             displayName: 'Install pip & tox'
@@ -386,7 +372,7 @@ stages:
         value: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
       - group: prod
     dependsOn:
-      - snapshot
+      - sonar_analysis
     pool:
       vmImage: ubuntu-latest
     jobs:
@@ -422,9 +408,9 @@ stages:
               GIT_BRANCH: $(Build.SourceBranch)
 
           - task: UsePythonVersion@0
-            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            displayName: 'Install Python 3.9'
             inputs:
-              versionSpec: '${{ parameters.default_python_version }}'
+              versionSpec: '3.9'
 
           - task: Bash@3
             displayName: 'Install pip & tox'

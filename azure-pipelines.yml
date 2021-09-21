@@ -99,8 +99,8 @@ stages:
     jobs:
 
       - job: Tests
-        strategy:
-          matrix: ${{ parameters.tox_matrix }}
+#        strategy:
+#          matrix: ${{ parameters.tox_matrix }}
         steps:
 
           - task: Bash@3
@@ -132,9 +132,9 @@ stages:
               GIT_BRANCH: $(BRANCH)
 
           - task: UsePythonVersion@0
-            displayName: 'Install Python $(python_version)'
+            displayName: 'Install Python 3.8'
             inputs:
-              versionSpec: '$(python_version)'
+              versionSpec: '3.8'
 
           - task: Bash@3
             displayName: 'Install pip & tox'
@@ -156,7 +156,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                tox -e $(tox_env)
+                tox -e py38
 
 #          - task: PublishTestResults@2
 #            condition: succeededOrFailed()

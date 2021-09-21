@@ -181,100 +181,104 @@ stages:
               pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
               artifactName: ${{ parameters.pylint_path }}
 
-#  - stage: sonar_analysis
-#    displayName: Sonar analysis
-#    condition: succeeded()
-#    variables:
-#      SONAR_BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
-#    pool:
-#      vmImage: ubuntu-latest
-#    dependsOn:
-#      - test
-#    jobs:
-#
-#      - job: Build
-#        steps:
-#
-#          - task: Bash@3
-#            displayName: 'Set up Git'
-#            inputs:
-#              targetType: 'inline'
-#              script: |
-#                git config --global user.email ${{ parameters.gitUserEmail }}
-#                git config --global user.name ${{ parameters.gitUserName }}
-#                ## init.defaultBranch to avoid a warning during build
-#                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
-#
-#          - checkout: self
-#            persistCredentials: true
-#            clean: true
-#            displayName: 'Clone current project'
-#
-#          - task: Bash@3
-#            displayName: 'Checkout local branch $(Build.SourceBranch)'
-#            inputs:
-#              targetType: 'inline'
-#              ## Ensure to check an existing branch.
-#              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
-#              ## With the cut mechanic, we get only the git branch name, not the ref
-#              script: |
-#                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
-#                  git checkout $branch
-#                  git branch --set-upstream-to=origin/$branch
-#            env:
-#              GIT_BRANCH: $(Build.SourceBranch)
-#
-#          - task: UsePythonVersion@0
-#            displayName: 'Install Python ${{ parameters.default_python_version }}'
-#            inputs:
-#              versionSpec: '${{ parameters.default_python_version }}'
-#
-#          - task: Bash@3
-#            displayName: 'Install pip & tox'
-#            inputs:
-#              targetType: 'inline'
-#              script: |
-#                pip install --user --upgrade pip
-#                pip install --user tox
-#                echo "##vso[task.setvariable variable=projectName]$(python setup.py --name)"
-#                echo "##vso[task.setvariable variable=projectVersion]$(python setup.py --version)"
-#                echo "##vso[task.setvariable variable=projectDescription]$(python setup.py --description)"
-#            env:
-#              PIP_CONFIG_FILE: "$(pip_conf.secureFilePath)"
-#
-#          - task: DownloadBuildArtifacts@0
-#            displayName: 'Download test and coverage results'
-#            inputs:
-#              artifactName: ${{ parameters.pylint_path }}
-#              downloadPath: "$(System.DefaultWorkingDirectory)"
-#
-#          - task: Bash@3
-#            displayName: 'Run PyLint'
-#            inputs:
-#              targetType: 'inline'
-#              script: |
-#                tox -e lint
-#
-#          - task: SonarQubePrepare@4
-#            displayName: 'Prepare SonarQube'
-#            inputs:
-#              SonarQube: ${{ parameters.sonarqube_connection_name }}
-#              scannerMode: 'CLI'
-#              configMode: 'file'
-#              extraProperties: |
-#                # Additional properties that will be passed to the scanner,
-#                # Put one key=value per line, example:
-#                # sonar.exclusions=**/*.bin
-#                sonar.organization=lvffy
-#                sonar.host.url=https://sonarcloud.io
-#
-#          - task: SonarQubeAnalyze@4
-#            displayName: 'Run Sonar Analysis'
-#
-#          - task: SonarQubePublish@4
-#            displayName: 'Publish sonarqube analysis'
-#            inputs:
-#              pollingTimeoutSec: '300'
+  - stage: sonar_analysis
+    displayName: Sonar analysis
+    condition: succeeded()
+    variables:
+      SONAR_BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
+      sonarCloudEndpointName: 'SC'
+      sonarCloudOrganization: 'lvffy'
+      sonarCloudProjectKey: 'LvffY_tox-setuptools-version'
+      sonarCloudProjectName: 'tox-setuptools-version'
+    pool:
+      vmImage: ubuntu-latest
+    dependsOn:
+      - test
+    jobs:
+
+      - job: Build
+        steps:
+
+          - task: Bash@3
+            displayName: 'Set up Git'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git config --global user.email ${{ parameters.gitUserEmail }}
+                git config --global user.name ${{ parameters.gitUserName }}
+                ## init.defaultBranch to avoid a warning during build
+                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
+
+          - checkout: self
+            persistCredentials: true
+            clean: true
+            displayName: 'Clone current project'
+
+          - task: Bash@3
+            displayName: 'Checkout local branch $(Build.SourceBranch)'
+            inputs:
+              targetType: 'inline'
+              ## Ensure to check an existing branch.
+              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
+              ## With the cut mechanic, we get only the git branch name, not the ref
+              script: |
+                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
+                  git checkout $branch
+                  git branch --set-upstream-to=origin/$branch
+            env:
+              GIT_BRANCH: $(Build.SourceBranch)
+
+          - task: UsePythonVersion@0
+            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            inputs:
+              versionSpec: '${{ parameters.default_python_version }}'
+
+          - task: Bash@3
+            displayName: 'Install pip & tox'
+            inputs:
+              targetType: 'inline'
+              script: |
+                pip install --user --upgrade pip
+                pip install --user tox
+                echo "##vso[task.setvariable variable=projectName]$(python setup.py --name)"
+                echo "##vso[task.setvariable variable=projectVersion]$(python setup.py --version)"
+                echo "##vso[task.setvariable variable=projectDescription]$(python setup.py --description)"
+
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Download test and coverage results'
+            inputs:
+              artifactName: ${{ parameters.pylint_path }}
+              downloadPath: "$(System.DefaultWorkingDirectory)"
+
+          - task: Bash@3
+            displayName: 'Run PyLint'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e lint
+
+          - task: SonarCloudPrepare@1
+            displayName: 'Prepare SonarQube'
+            inputs:
+              SonarCloud: '$(sonarCloudEndpointName)'
+              organization: '$(sonarCloudOrganization)'
+              scannerMode: 'CLI'
+              configMode: 'file'
+              # This sonar-project.properties file is usually placed at the root level of the repository. However, you can define your own path.
+              # Read more about this file and its expected format : https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/
+              configFile: 'sonar-project.properties'
+              # Additional properties that will be passed to the scanner,
+              # Put one key=value per line, example:
+              # sonar.exclusions=**/*.bin
+              # extraProperties:
+
+          - task: SonarCloudAnalyze@1
+            displayName: 'Run Sonar Analysis'
+
+          - task: SonarCloudPublish@1
+            displayName: 'Publish sonarqube analysis'
+            inputs:
+              pollingTimeoutSec: '300'
 
   - stage: snapshot
     displayName: Generate snapshot
@@ -286,7 +290,7 @@ stages:
     pool:
       vmImage: ubuntu-latest
     dependsOn:
-      - test
+      - sonar_analysis
     jobs:
 
       - job: Build

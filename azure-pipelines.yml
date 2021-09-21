@@ -186,7 +186,7 @@ stages:
     condition: succeeded()
     variables:
       SONAR_BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
-      sonarCloudEndpointName: 'SC'
+      sonarCloudEndpointName: 'sonarqube'
       sonarCloudOrganization: 'lvffy'
       sonarCloudProjectKey: 'LvffY_tox-setuptools-version'
       sonarCloudProjectName: 'tox-setuptools-version'

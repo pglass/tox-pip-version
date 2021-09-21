@@ -88,8 +88,8 @@ stages:
     jobs:
 
       - job: Tests
-#        strategy:
-#          matrix: ${{ parameters.tox_matrix }}
+        strategy:
+          matrix: ${{ parameters.tox_matrix }}
         steps:
 
           - task: Bash@3

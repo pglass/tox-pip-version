@@ -1,5 +1,17 @@
-include tox.ini
+## Root directory includes
 include LICENSE
-include MAKEFILE
+include *.md
 
-recursive-include tests *.py *.ini
+## Include all sources files
+recursive-include tox_setuptools_version *
+
+## Exclude everything that is not needed
+recursive-exclude tests *
+exclude bumpversion.cfg
+exclude azure-pipelines.yml
+exclude MANIFEST.in
+exclude sonar-project.properties
+exclude tox.ini
+exclude .gitignore
+
+

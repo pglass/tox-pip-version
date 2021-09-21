@@ -66,12 +66,3 @@ specifiers.
 | `setuptools_version = setuptools!=58.0,>57`  | `pip install -U setuptools!=58.0,>57` |
 | `setuptools_version = setuptools`          | `pip install -U setuptools`         |
 | `setuptools_version = setuptools@git+https://github.com/pypa/setuptools@0168ac6` | `setuptools@git+https://github.com/pypa/setuptools@0168ac6` |
-
-### Tests
-
-Use `make test` to run the tests, which includes linting and functional tests.
-
-Each of the `tests/*` directories is a "feature" that needs testing. Each
-feature sub-directory contains a tox.ini file that sets pip version in a
-particular way, and then uses a tox command to check the correct pip version
-was installed.

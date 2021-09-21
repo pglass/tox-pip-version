@@ -260,7 +260,7 @@ stages:
           - task: SonarCloudPrepare@1
             displayName: 'Prepare SonarQube'
             inputs:
-              SonarCloud: '$(sonarCloudEndpointName)'
+              SonarCloud: 'sonarqube'
               organization: '$(sonarCloudOrganization)'
               scannerMode: 'CLI'
               configMode: 'file'

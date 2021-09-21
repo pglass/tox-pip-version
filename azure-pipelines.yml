@@ -241,7 +241,7 @@ stages:
               targetType: 'inline'
               script: |
                 pip install --user --upgrade pip
-                pip install --user tox
+                pip install --user --upgrade tox
                 echo "##vso[task.setvariable variable=projectName]$(python setup.py --name)"
                 echo "##vso[task.setvariable variable=projectVersion]$(python setup.py --version)"
                 echo "##vso[task.setvariable variable=projectDescription]$(python setup.py --description)"
@@ -432,7 +432,7 @@ stages:
               targetType: 'inline'
               script: |
                 pip install --user --upgrade pip
-                pip install --user tox
+                pip install --user --upgrade tox
 
           - task: Bash@3
             displayName: 'Pass black'

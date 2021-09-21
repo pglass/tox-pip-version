@@ -386,7 +386,7 @@ stages:
         value: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
       - group: prod
     dependsOn:
-      - test
+      - snapshot
     pool:
       vmImage: ubuntu-latest
     jobs:

@@ -155,31 +155,31 @@ stages:
               script: |
                 tox -e py38
 
-#          - task: PublishTestResults@2
-#            condition: succeededOrFailed()
-#            displayName: 'Publish tests for Python $(python_version)'
-#            inputs:
-#              testResultsFiles: '${{ parameters.test_file_path }}/${{ parameters.test_file_pattern }}'
-#              testRunTitle: 'Publish test results for Python $(python_version)'
-#
-#          - task: PublishCodeCoverageResults@1
-#            condition: succeededOrFailed()
-#            displayName: 'Publish coverage for Python $(python_version)'
-#            inputs:
-#              codeCoverageTool: Cobertura
-#              summaryFileLocation: '${{ parameters.coverage_file_path }}/${{ parameters.coverage_file_pattern }}'
-#
-#          - task: PublishBuildArtifacts@1
-#            displayName: 'Publish test results'
-#            inputs:
-#              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
-#              artifactName: ${{ parameters.pylint_path }}
-#
-#          - task: PublishBuildArtifacts@1
-#            displayName: 'Publish code coverage'
-#            inputs:
-#              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
-#              artifactName: ${{ parameters.pylint_path }}
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            displayName: 'Publish tests for Python $(python_version)'
+            inputs:
+              testResultsFiles: '${{ parameters.test_file_path }}/${{ parameters.test_file_pattern }}'
+              testRunTitle: 'Publish test results for Python $(python_version)'
+
+          - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
+            displayName: 'Publish coverage for Python $(python_version)'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '${{ parameters.coverage_file_path }}/${{ parameters.coverage_file_pattern }}'
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish test results'
+            inputs:
+              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
+              artifactName: ${{ parameters.pylint_path }}
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish code coverage'
+            inputs:
+              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
+              artifactName: ${{ parameters.pylint_path }}
 
 #  - stage: sonar_analysis
 #    displayName: Sonar analysis
@@ -265,11 +265,8 @@ stages:
 #                # Additional properties that will be passed to the scanner,
 #                # Put one key=value per line, example:
 #                # sonar.exclusions=**/*.bin
-#                sonar.projectKey=$(System.TeamProject)_$(Build.Repository.Name)
-#                sonar.projectName=$(projectName)
-#                sonar.projectVersion=$(projectVersion)
-#                sonar.projectDescription=$(projectDescription)
-#                sonar.branch.name=$(SONAR_BRANCH)
+#                sonar.organization=lvffy
+#                sonar.host.url=https://sonarcloud.io
 #
 #          - task: SonarQubeAnalyze@4
 #            displayName: 'Run Sonar Analysis'

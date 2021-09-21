@@ -1,0 +1,455 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+parameters:
+  - name: gitUserName
+    displayName: 'Git username to use'
+    type: string
+    default: "Azure DevOps"
+
+  - name: gitUserEmail
+    displayName: 'Git user email to use'
+    type: string
+    default: azure.devops@geodis.com
+
+  - name: gitDefaultBranch
+    displayName: 'Default branch name of the project. Non blocking parameter, only avoids unneeded warnings'
+    type: string
+    default: master
+
+  - name: release_branches_startsWith
+    displayName: "Release git branches prefix"
+    type: string
+    default: "master"
+
+  - name: snapshot_branches_startsWith
+    displayName: "Snapshot git branches prefix"
+    type: string
+    default: "develop"
+
+  - name: tox_matrix
+    displayName: "Matrix object defining python version and tox configuration to run tests"
+    type: object
+    default:
+      Python36:
+        python_version: '3.6'
+        tox_env: 'py36'
+      Python37:
+        python_version: '3.7'
+        tox_env: 'py37'
+      Python38:
+        python_version: '3.8'
+        tox_env: 'py38'
+      Python39:
+        python_version: '3.9'
+        tox_env: 'py39'
+
+  - name: test_file_pattern
+    displayName: "Pattern to look at for test results files"
+    type: string
+    default: 'test-*.xml'
+
+  - name: coverage_file_pattern
+    displayName: "Pattern to look at for coverage files"
+    type: string
+    default: 'coverage-*.xml'
+
+  - name: test_file_path
+    displayName: "Relative path to look at for test results files"
+    type: string
+    default: 'coverage'
+
+  - name: coverage_file_path
+    displayName: "Relative path to look at for code coverage files"
+    type: string
+    default: 'coverage'
+
+  - name: pylint_path
+    displayName: "Pylint directory to find coverage results"
+    type: string
+    default: 'coverage'
+
+  - name: default_python_version
+    displayName: "Python version to use for building package, not testing"
+    type: string
+    default: '3.8'
+    values:
+      - 3.6
+      - 3.7
+      - 3.8
+      - 3.9
+
+  - name: sonarqube_connection_name
+    type: string
+    default: "sonarqube"
+    displayName: "SonarQube service connection name to use in Azure DevOps"
+
+stages:
+  - stage: test
+    displayName: Execute Unit tests
+    variables:
+      BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
+    pool:
+      vmImage: ubuntu-latest
+    jobs:
+
+      - job: Tests
+        strategy:
+          matrix: ${{ parameters.tox_matrix }}
+        steps:
+
+          - task: Bash@3
+            displayName: 'Set up Git'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git config --global user.email ${{ parameters.gitUserEmail }}
+                git config --global user.name ${{ parameters.gitUserName }}
+                ## init.defaultBranch to avoid a warning during build
+                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
+
+          - checkout: self
+            persistCredentials: true
+            clean: true
+            displayName: 'Clone current project'
+
+          - task: Bash@3
+            displayName: 'Checkout local branch $(Build.SourceBranch)'
+            inputs:
+              targetType: 'inline'
+              ## Ensure to check an existing branch.
+              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
+              ## With the cut mechanic, we get only the git branch name, not the ref
+              script: |
+                  git checkout $GIT_BRANCH
+                  git branch --set-upstream-to=origin/$GIT_BRANCH
+            env:
+              GIT_BRANCH: $(BRANCH)
+
+          - task: UsePythonVersion@0
+            displayName: 'Install Python $(python_version)'
+            inputs:
+              versionSpec: '$(python_version)'
+
+          - task: Bash@3
+            displayName: 'Install pip & tox'
+            inputs:
+              targetType: 'inline'
+              script: |
+                pip install --user --upgrade pip
+                pip install --user --upgrade tox
+
+          - task: Bash@3
+            displayName: 'Run black on code'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e black
+
+          - task: Bash@3
+            displayName: 'Run tests'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e $(tox_env)
+
+#          - task: PublishTestResults@2
+#            condition: succeededOrFailed()
+#            displayName: 'Publish tests for Python $(python_version)'
+#            inputs:
+#              testResultsFiles: '${{ parameters.test_file_path }}/${{ parameters.test_file_pattern }}'
+#              testRunTitle: 'Publish test results for Python $(python_version)'
+#
+#          - task: PublishCodeCoverageResults@1
+#            condition: succeededOrFailed()
+#            displayName: 'Publish coverage for Python $(python_version)'
+#            inputs:
+#              codeCoverageTool: Cobertura
+#              summaryFileLocation: '${{ parameters.coverage_file_path }}/${{ parameters.coverage_file_pattern }}'
+#
+#          - task: PublishBuildArtifacts@1
+#            displayName: 'Publish test results'
+#            inputs:
+#              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
+#              artifactName: ${{ parameters.pylint_path }}
+#
+#          - task: PublishBuildArtifacts@1
+#            displayName: 'Publish code coverage'
+#            inputs:
+#              pathToPublish: "$(System.DefaultWorkingDirectory)/${{ parameters.coverage_file_path }}"
+#              artifactName: ${{ parameters.pylint_path }}
+
+#  - stage: sonar_analysis
+#    displayName: Sonar analysis
+#    condition: succeeded()
+#    variables:
+#      SONAR_BRANCH: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
+#    pool:
+#      vmImage: ubuntu-latest
+#    dependsOn:
+#      - test
+#    jobs:
+#
+#      - job: Build
+#        steps:
+#
+#          - task: Bash@3
+#            displayName: 'Set up Git'
+#            inputs:
+#              targetType: 'inline'
+#              script: |
+#                git config --global user.email ${{ parameters.gitUserEmail }}
+#                git config --global user.name ${{ parameters.gitUserName }}
+#                ## init.defaultBranch to avoid a warning during build
+#                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
+#
+#          - checkout: self
+#            persistCredentials: true
+#            clean: true
+#            displayName: 'Clone current project'
+#
+#          - task: Bash@3
+#            displayName: 'Checkout local branch $(Build.SourceBranch)'
+#            inputs:
+#              targetType: 'inline'
+#              ## Ensure to check an existing branch.
+#              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
+#              ## With the cut mechanic, we get only the git branch name, not the ref
+#              script: |
+#                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
+#                  git checkout $branch
+#                  git branch --set-upstream-to=origin/$branch
+#            env:
+#              GIT_BRANCH: $(Build.SourceBranch)
+#
+#          - task: UsePythonVersion@0
+#            displayName: 'Install Python ${{ parameters.default_python_version }}'
+#            inputs:
+#              versionSpec: '${{ parameters.default_python_version }}'
+#
+#          - task: Bash@3
+#            displayName: 'Install pip & tox'
+#            inputs:
+#              targetType: 'inline'
+#              script: |
+#                pip install --user --upgrade pip
+#                pip install --user tox
+#                echo "##vso[task.setvariable variable=projectName]$(python setup.py --name)"
+#                echo "##vso[task.setvariable variable=projectVersion]$(python setup.py --version)"
+#                echo "##vso[task.setvariable variable=projectDescription]$(python setup.py --description)"
+#            env:
+#              PIP_CONFIG_FILE: "$(pip_conf.secureFilePath)"
+#
+#          - task: DownloadBuildArtifacts@0
+#            displayName: 'Download test and coverage results'
+#            inputs:
+#              artifactName: ${{ parameters.pylint_path }}
+#              downloadPath: "$(System.DefaultWorkingDirectory)"
+#
+#          - task: Bash@3
+#            displayName: 'Run PyLint'
+#            inputs:
+#              targetType: 'inline'
+#              script: |
+#                tox -e lint
+#
+#          - task: SonarQubePrepare@4
+#            displayName: 'Prepare SonarQube'
+#            inputs:
+#              SonarQube: ${{ parameters.sonarqube_connection_name }}
+#              scannerMode: 'CLI'
+#              configMode: 'file'
+#              extraProperties: |
+#                # Additional properties that will be passed to the scanner,
+#                # Put one key=value per line, example:
+#                # sonar.exclusions=**/*.bin
+#                sonar.projectKey=$(System.TeamProject)_$(Build.Repository.Name)
+#                sonar.projectName=$(projectName)
+#                sonar.projectVersion=$(projectVersion)
+#                sonar.projectDescription=$(projectDescription)
+#                sonar.branch.name=$(SONAR_BRANCH)
+#
+#          - task: SonarQubeAnalyze@4
+#            displayName: 'Run Sonar Analysis'
+#
+#          - task: SonarQubePublish@4
+#            displayName: 'Publish sonarqube analysis'
+#            inputs:
+#              pollingTimeoutSec: '300'
+
+  - stage: snapshot
+    displayName: Generate snapshot
+    condition: and( succeeded(), startsWith(variables['build.SourceBranch'], 'refs/heads/${{ parameters.snapshot_branches_startsWith }}'))
+    variables:
+      - name: BRANCH
+        value: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
+      - group: dev
+    pool:
+      vmImage: ubuntu-latest
+    dependsOn:
+      - test
+    jobs:
+
+      - job: Build
+        steps:
+          - task: Bash@3
+            displayName: 'Set up Git'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git config --global user.email ${{ parameters.gitUserEmail }}
+                git config --global user.name ${{ parameters.gitUserName }}
+                ## init.defaultBranch to avoid a warning during build
+                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
+
+          - checkout: self
+            persistCredentials: true
+            clean: true
+            displayName: 'Clone current project'
+
+          - task: Bash@3
+            displayName: 'Checkout local branch $(Build.SourceBranch)'
+            inputs:
+              targetType: 'inline'
+              ## Ensure to check an existing branch.
+              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
+              ## With the cut mechanic, we get only the git branch name, not the ref
+              script: |
+                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
+                  git checkout $branch
+                  git branch --set-upstream-to=origin/$branch
+            env:
+              GIT_BRANCH: $(Build.SourceBranch)
+
+          - task: UsePythonVersion@0
+            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            inputs:
+              versionSpec: '${{ parameters.default_python_version }}'
+
+          - task: Bash@3
+            displayName: 'Install pip & tox'
+            inputs:
+              targetType: 'inline'
+              script: |
+                pip install --user --upgrade pip
+                pip install --user --upgrade tox
+
+          - task: Bash@3
+            displayName: 'Run black on code'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e black
+
+          - task: Bash@3
+            displayName: 'Update docs'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e docs
+
+          - task: Bash@3
+            displayName: 'Upload artifact'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e upload
+            env:
+              TWINE_REPOSITORY_URL: "$(TWINE_REPOSITORY_URL)"
+              TWINE_USERNAME: "__token__"
+              TWINE_PASSWORD: "$(TWINE_PASSWORD)"
+
+          - task: Bash@3
+            displayName: 'Update snapshot version'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e fix-version -- --current-version $(python setup.py --version)
+
+          - task: Bash@3
+            displayName: 'Git Push'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git push origin HEAD:${{ variables['build.sourceBranch'] }}
+
+  - stage: release
+    displayName: Generate release
+    condition: and( succeeded(), startsWith(variables['build.SourceBranch'], 'refs/heads/${{ parameters.release_branches_startsWith }}'))
+    variables:
+      - name: BRANCH
+        value: $[replace(variables['build.SourceBranch'], 'refs/heads/', '')]
+      - group: prod
+    dependsOn:
+      - test
+    pool:
+      vmImage: ubuntu-latest
+    jobs:
+      - job: Build
+        steps:
+          - task: Bash@3
+            displayName: 'Set up Git'
+            inputs:
+              targetType: 'inline'
+              script: |
+                git config --global user.email ${{ parameters.gitUserEmail }}
+                git config --global user.name ${{ parameters.gitUserName }}
+                ## init.defaultBranch to avoid a warning during build
+                git config --global init.defaultBranch ${{ parameters.gitDefaultBranch }}
+
+          - checkout: self
+            persistCredentials: true
+            clean: true
+            displayName: 'Clone current project'
+
+          - task: Bash@3
+            displayName: 'Checkout local branch $(Build.SourceBranch)'
+            inputs:
+              targetType: 'inline'
+              ## Ensure to check an existing branch.
+              ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
+              ## With the cut mechanic, we get only the git branch name, not the ref
+              script: |
+                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
+                  git checkout $branch
+                  git branch --set-upstream-to=origin/$branch
+            env:
+              GIT_BRANCH: $(Build.SourceBranch)
+
+          - task: UsePythonVersion@0
+            displayName: 'Install Python ${{ parameters.default_python_version }}'
+            inputs:
+              versionSpec: '${{ parameters.default_python_version }}'
+
+          - task: Bash@3
+            displayName: 'Install pip & tox'
+            inputs:
+              targetType: 'inline'
+              script: |
+                pip install --user --upgrade pip
+                pip install --user tox
+
+          - task: Bash@3
+            displayName: 'Pass black'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e black -- --check
+
+          - task: Bash@3
+            displayName: 'Generate docs'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e docs
+
+          - task: Bash@3
+            displayName: 'Release'
+            inputs:
+              targetType: 'inline'
+              script: |
+                tox -e release
+            env:
+              TWINE_REPOSITORY: "${{ parameters.twine_repository_name }}"

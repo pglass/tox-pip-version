@@ -86,6 +86,8 @@ parameters:
     default: "sonarqube"
     displayName: "SonarQube service connection name to use in Azure DevOps"
 
+pr: none
+
 stages:
   - stage: test
     displayName: Execute Unit tests

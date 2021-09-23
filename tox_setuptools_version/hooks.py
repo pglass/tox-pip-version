@@ -100,11 +100,6 @@ def tox_testenv_create(venv, action):
     except AttributeError:
         venvname = action.name
 
-
-
-
-
-
     # Use `setuptools_version` in tox.ini over the environment variable
     setuptools_version = PER_ENV_SETUPTOOLS_VERSIONS.get(
         venvname, tox_setuptools_version_from_env

@@ -1,4 +1,5 @@
 [![Build Status](https://dev.azure.com/LvffY/LvffY/_apis/build/status/LvffY.tox-setuptools-version?branchName=master)](https://dev.azure.com/LvffY/LvffY/_build/latest?definitionId=1&branchName=master)
+![](https://img.shields.io/pypi/v/tox-setuptools-version.svg)
 ![](https://img.shields.io/pypi/pyversions/tox-setuptools-version.svg)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=coverage)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=bugs)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)

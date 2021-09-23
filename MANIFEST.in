@@ -7,7 +7,7 @@ recursive-include tox_setuptools_version *
 
 ## Exclude everything that is not needed
 recursive-exclude tests *
-recursive-exclude test_setuptools_version/__pycache__ *
+recursive-exclude tox_setuptools_version/__pycache__ *
 exclude bumpversion.cfg
 exclude azure-pipelines.yml
 exclude MANIFEST.in

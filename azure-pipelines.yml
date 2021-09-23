@@ -126,9 +126,9 @@ stages:
               GIT_BRANCH: $(BRANCH)
 
           - task: UsePythonVersion@0
-            displayName: 'Install Python 3.8'
+            displayName: 'Install Python $(python_version)'
             inputs:
-              versionSpec: '3.8'
+              versionSpec: '$(python_version)'
 
           - task: Bash@3
             displayName: 'Install pip & tox'
@@ -150,7 +150,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                tox -e py38
+                tox -e $(tox_env)
 
           - task: PublishTestResults@2
             condition: succeededOrFailed()

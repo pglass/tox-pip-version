@@ -1,6 +1,14 @@
 [![Build Status](https://app.travis-ci.com/LvffY/tox-setuptools-version.svg?branch=master)](https://app.travis-ci.com/LvffY/tox-setuptools-version)
 ![](https://img.shields.io/pypi/v/tox-setuptools-version.svg)
 ![](https://img.shields.io/pypi/pyversions/tox-setuptools-version.svg)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=coverage)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=bugs)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=code_smells)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=LvffY_tox-setuptools-version&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=LvffY_tox-setuptools-version)
+
 
 Overview
 --------

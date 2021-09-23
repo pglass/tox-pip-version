@@ -76,6 +76,8 @@ parameters:
     default: "sonarqube"
     displayName: "SonarQube service connection name to use in Azure DevOps"
 
+trigger:
+  batch: true
 pr: none
 
 stages:

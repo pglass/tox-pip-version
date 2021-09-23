@@ -17,7 +17,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     install_requires=["tox>=2.0"],
-    entry_points={"tox": "setuptools_version = tox_setuptools_version.hooks"},
+    entry_points={"tox": ["setuptools_version = tox_setuptools_version.hooks"]},
     package_dir={"tox_setuptools_version": "tox_setuptools_version"},
     classifiers=[
         "Development Status :: 4 - Beta",

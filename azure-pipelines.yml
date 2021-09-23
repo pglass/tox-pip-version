@@ -334,13 +334,6 @@ stages:
                 tox -e black
 
           - task: Bash@3
-            displayName: 'Update docs'
-            inputs:
-              targetType: 'inline'
-              script: |
-                tox -e docs
-
-          - task: Bash@3
             displayName: 'Upload artifact'
             inputs:
               targetType: 'inline'
@@ -426,13 +419,6 @@ stages:
               targetType: 'inline'
               script: |
                 tox -e black -- --check
-
-          - task: Bash@3
-            displayName: 'Generate docs'
-            inputs:
-              targetType: 'inline'
-              script: |
-                tox -e docs
 
           - task: Bash@3
             displayName: 'Release'

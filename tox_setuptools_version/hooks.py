@@ -11,14 +11,19 @@ TOX_SETUPTOOLS_VERSION_VAR = "TOX_SETUPTOOLS_VERSION"
 
 
 def _testenv_create(venv, action):
-    # For compatibility with the tox-venv and tox-conda plugins:
-    #
-    # 1. Detect if tox-venv is installed and invoke if so.
-    # 2. Else, detect if tox-conda is installed and invoke if so
-    # 3. Else, neither is installed, so proceed as normal
-    #
-    # We use `tryfirst=True` on our hookimpl to run before tox-venv does (no
-    # plugins run after a plugin returns non-None from its hook function)
+    """
+    For compatibility with the tox-venv and tox-conda plugins:
+
+     1. Detect if tox-venv is installed and invoke if so.
+     2. Else, detect if tox-conda is installed and invoke if so
+     3. Else, neither is installed, so proceed as normal
+
+     We use `tryfirst=True` on our hookimpl to run before tox-venv does (no
+     plugins run after a plugin returns non-None from its hook function)
+    :param venv: Virtualenv name
+    :param action: Action to make
+    :return: Make the right imports depending on the tox plugin used
+    """
     try:
         from tox_venv.hooks import tox_testenv_create
 
@@ -40,6 +45,12 @@ def _testenv_create(venv, action):
 
 
 def get_setuptools_package_version(setuptools_version):
+    """
+    Generate the right setuptools command for pip command
+
+    :param setuptools_version: Setuptools version obtained from
+    :return: A string formatted for pip install command (e.g setuptools==58.0.0)
+    """
     setuptools_version = setuptools_version.lower().strip()
     # tox.ini: setuptools_version = setuptools==19.0
     if setuptools_version.startswith("setuptools"):
@@ -50,6 +61,12 @@ def get_setuptools_package_version(setuptools_version):
 
 @tox.hookimpl
 def tox_configure(config):
+    """
+    Tox configure implementation
+
+    :param config: Tox configuration
+    :return: Nothing, update PER_ENV_SETUPTOOLS_VERSIONS dictionary
+    """
     for env, envconfig in config.envconfigs.items():
         setuptools_version = envconfig._reader.getstring("setuptools_version")
         if setuptools_version:
@@ -58,6 +75,14 @@ def tox_configure(config):
 
 @tox.hookimpl(tryfirst=True)
 def tox_testenv_create(venv, action):
+    """
+    tox_testenv_create implementation.
+
+    Forces installation of setuptools with a specific version
+    :param venv: Virtualenv object
+    :param action: Action to run
+    :return: Nothing, update current venv setup
+    """
     _testenv_create(venv, action)
 
     # Grab the env this way to respect `setenv = TOX_SETUPTOOLS_VERSION`, if present.

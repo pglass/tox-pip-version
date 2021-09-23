@@ -32,5 +32,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
     ],
     python_requires=">=3.6",
-    keywords=('tox', 'setuptools', '2to3')
+    keywords=("tox", "setuptools", "2to3"),
 )

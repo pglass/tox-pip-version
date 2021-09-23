@@ -1,9 +1,8 @@
 import itertools
 import os
+import pytest
 import subprocess
 import sys
-
-import pytest
 
 if sys.version_info.major == 2:
     from backports import tempfile
@@ -15,13 +14,13 @@ PACKAGE_DIR = os.path.realpath(os.path.join(HERE, ".."))
 
 TOX_VERSIONS = [
     ">=3.7,<3.8",
-    ">=3.8,<3.9",
+    ">=3.8",
 ]
 
 TOX_TO_TOX_VENV_VERSIONS = {
     # tox-venv 0.4.0 requires tox>=3.8.1
     ">=3.7,<3.8": "<0.4.0",
-    ">=3.8,<3.9": ">=0.4.0",
+    ">=3.8": ">=0.4.0",
 }
 
 CASES = {
@@ -81,8 +80,6 @@ def skip_if_missing_python(exe):
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version(tox_version, subdirectory):
-    if "py27" in subdirectory:
-        skip_if_missing_python("python2.7")
 
     env = CASES[subdirectory].get("env")
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
@@ -105,15 +102,27 @@ def test_with_tox_version(tox_version, subdirectory):
 
 @pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
 def test_with_tox_version_with_tox_venv(tox_version, subdirectory):
-    if "py27" in subdirectory:
-        skip_if_missing_python("python2.7")
 
     env = CASES[subdirectory].get("env")
     tox_venv_version = TOX_TO_TOX_VENV_VERSIONS[tox_version]
 
     temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
     try:
-        install_deps(venv_dir, "tox%s" % tox_version, "tox-venv%s" % tox_venv_version)
+        install_deps(venv_dir, "tox%s" % tox_version, "tox-venv%s" % tox_venv_version, "tox-pip-version")
+        install_deps(venv_dir, PACKAGE_DIR)
+        _run_case(venv_dir, subdirectory, env=env)
+    finally:
+        temp_dir.cleanup()
+
+
+@pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
+def test_with_tox_version_with_tox_pip_version(tox_version, subdirectory):
+    env = CASES[subdirectory].get("env")
+    env["TOX_PIP_VERSION"] = "20.2.4"
+
+    temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
+    try:
+        install_deps(venv_dir, "tox%s" % tox_version, "tox-pip-version")
         install_deps(venv_dir, PACKAGE_DIR)
         _run_case(venv_dir, subdirectory, env=env)
     finally:

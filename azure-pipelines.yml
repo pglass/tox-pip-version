@@ -213,8 +213,8 @@ stages:
               ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
               ## With the cut mechanic, we get only the git branch name, not the ref
               script: |
-                  git checkout $branch
-                  git branch --set-upstream-to=origin/$branch
+                  git checkout $GIT_BRANCH
+                  git branch --set-upstream-to=origin/$GIT_BRANCH
             env:
               GIT_BRANCH: $(BRANCH)
 
@@ -308,11 +308,10 @@ stages:
               ## With Build.SourceBranch, we'll receive something like refs/heads/branchName or refs/heads/feature/featureName
               ## With the cut mechanic, we get only the git branch name, not the ref
               script: |
-                  branch=$(echo $GIT_BRANCH | cut -d/ -f3-)
-                  git checkout $branch
-                  git branch --set-upstream-to=origin/$branch
+                  git checkout $GIT_BRANCH
+                  git branch --set-upstream-to=origin/$GIT_BRANCH
             env:
-              GIT_BRANCH: $(Build.SourceBranch)
+              GIT_BRANCH: $(BRANCH)
 
           - task: UsePythonVersion@0
             displayName: 'Install Python 3.9'

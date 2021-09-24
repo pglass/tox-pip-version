@@ -65,7 +65,7 @@ def test_with_tox_version(subdirectory, env):
 
 ## Add one case when using tox_pip_version
 AIRFLOW_CASES = CASES + [
-    ("test_with_airflow", {
+    ("test-with-airflow", {
         "TOX_SETUPTOOLS_VERSION": "58.0.0",
         "TOX_PIP_VERSION": "20.2.4",
     },)]

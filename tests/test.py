@@ -32,12 +32,18 @@ def _run_case(venv_dir, subdirectory, env=None):
 
 ## List test cases (which match tests sub-directory) and possibly add some environment variables
 CASES = {
-    "test-two-envs": {},
-    "test-env-inheritance": {},
+    "test-two-envs": {
+        "env": {},
+    },
+    "test-env-inheritance": {
+        "env": {},
+    },
     "test-environment-variable": {
         "env": {"TOX_SETUPTOOLS_VERSION": "58.0.0"},
     },
-    "test-version-specifiers": {}
+    "test-version-specifiers": {
+        "env": {},
+    },
 }
 
 @pytest.mark.parametrize("case", CASES)

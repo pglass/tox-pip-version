@@ -6,6 +6,7 @@ import tempfile
 HERE = os.path.realpath(os.path.dirname(__file__))
 PACKAGE_DIR = os.path.realpath(os.path.join(HERE, ".."))
 
+
 def setup_fresh_venv(tag):
     temp_dir = tempfile.TemporaryDirectory(prefix=tag)
     venv_dir = os.path.join(temp_dir.name, "venv")
@@ -32,18 +33,10 @@ def _run_case(venv_dir, subdirectory, env=None):
 
 ## List test cases (which match tests sub-directory) and possibly add some environment variables
 CASES = [
-    (
-        "test-two-envs", {}
-    ),
-    (
-        "test-env-inheritance", {}
-    ),
-    (
-        "test-environment-variable", {"TOX_SETUPTOOLS_VERSION": "58.0.0"}
-    ),
-    (
-        "test-version-specifiers", {}
-    ),
+    ("test-two-envs", {}),
+    ("test-env-inheritance", {}),
+    ("test-environment-variable", {"TOX_SETUPTOOLS_VERSION": "58.0.0"}),
+    ("test-version-specifiers", {}),
 ]
 
 
@@ -63,12 +56,17 @@ def test_with_tox_version(subdirectory, env):
     finally:
         temp_dir.cleanup()
 
+
 ## Add one case when using tox_pip_version
 AIRFLOW_CASES = CASES + [
-    ("test-with-airflow", {
-        "TOX_SETUPTOOLS_VERSION": "58.0.0",
-        "TOX_PIP_VERSION": "20.2.4",
-    },)]
+    (
+        "test-with-airflow",
+        {
+            "TOX_SETUPTOOLS_VERSION": "58.0.0",
+            "TOX_PIP_VERSION": "20.2.4",
+        },
+    )
+]
 
 
 @pytest.mark.parametrize("subdirectory,env", AIRFLOW_CASES)

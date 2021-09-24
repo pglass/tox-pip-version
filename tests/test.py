@@ -1,45 +1,10 @@
-import itertools
 import os
 import pytest
 import subprocess
-import sys
-
-if sys.version_info.major == 2:
-    from backports import tempfile
-else:
-    import tempfile
+import tempfile
 
 HERE = os.path.realpath(os.path.dirname(__file__))
 PACKAGE_DIR = os.path.realpath(os.path.join(HERE, ".."))
-
-TOX_VERSIONS = [
-    ">=3.7,<3.8",
-    ">=3.8",
-]
-
-CASES = {
-    "test-two-envs": {
-        "env": {},
-    },
-    "test-env-inheritance": {
-        "env": {},
-    },
-    "test-environment-variable": {
-        "env": {"TOX_SETUPTOOLS_VERSION": "58.0.0"},
-    },
-    "test-version-specifiers": {
-        "env": {},
-    },
-    "test-with-airflow": {
-        "env": {
-            "TOX_SETUPTOOLS_VERSION": "58.0.0",
-            "TOX_PIP_VERSION": "20.2.4",
-        },
-    },
-}
-
-PYTEST_PARAMETERS = sorted(itertools.product(TOX_VERSIONS, CASES))
-
 
 def setup_fresh_venv(tag):
     temp_dir = tempfile.TemporaryDirectory(prefix=tag)
@@ -65,50 +30,59 @@ def _run_case(venv_dir, subdirectory, env=None):
     subprocess.check_call(command, cwd=directory, shell=True, env=env)
 
 
-def has_python_exe(exe):
+## List test cases (which match tests sub-directory) and possibly add some environment variables
+CASES = {
+    "test-two-envs": {},
+    "test-env-inheritance": {},
+    "test-environment-variable": {
+        "env": {"TOX_SETUPTOOLS_VERSION": "58.0.0"},
+    },
+    "test-version-specifiers": {}
+}
+
+@pytest.mark.parametrize("case", CASES)
+def test_with_tox_version(case):
+    """
+    Tests our plugin outside of all other plugin and/or other framework.
+
+    :param case: Test case to run
+    :return:
+    """
+    env = case.get("env", default={})
+    temp_dir, venv_dir = setup_fresh_venv(tag=case)
     try:
-        subprocess.check_output([exe, "--version"], stderr=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-
-def skip_if_missing_python(exe):
-    if not has_python_exe(exe):
-        pytest.skip("Python executable %s not found" % exe)
-
-
-@pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
-def test_with_tox_version(tox_version, subdirectory):
-
-    env = CASES[subdirectory].get("env")
-    temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
-    try:
-        # Sometimes see an error like,
-        #
-        #    Could not find a version that satisfies the requirement
-        #    tox<3.8,>=3.7 (from versions: none)
-        #
-        # Trying separate install commands due to suspicion that the directory
-        # installation is what causes this. tox-pip-version has `tox>=2.0` and
-        # we install something like `tox<3.8,>=3.7`. Maybe that combo causes
-        # some sort of issue?
-        install_deps(venv_dir, "tox%s" % tox_version)
+        install_deps(venv_dir, "tox")
         install_deps(venv_dir, PACKAGE_DIR)
-        _run_case(venv_dir, subdirectory, env=env)
+        _run_case(venv_dir, case, env=env)
     finally:
         temp_dir.cleanup()
 
+## Add one case when using tox_pip_version
+CASES["test_with_airflow"] = {
+    "env": {
+        "TOX_SETUPTOOLS_VERSION": "58.0.0",
+        "TOX_PIP_VERSION": "20.2.4",
+    },
+}
 
-@pytest.mark.parametrize("tox_version,subdirectory", PYTEST_PARAMETERS)
-def test_with_tox_version_with_tox_pip_version(tox_version, subdirectory):
-    env = CASES[subdirectory].get("env")
+@pytest.mark.parametrize("case", CASES)
+def test_with_tox_version_with_tox_pip_version(case):
+    """
+    Test our plugin when using in combination with tox-pip-version.
+
+    At the very first version it didn't work very well because of some bad interaction issues (because we were implementing the same tox hook)
+
+    This tests are able to install airflow (which was the root cause of this plugin)
+    :param case: test case to run
+    :return: Nothin, just run the tests
+    """
+    env = case.get("env", default={})
     env["TOX_PIP_VERSION"] = "20.2.4"
 
-    temp_dir, venv_dir = setup_fresh_venv(tag=subdirectory)
+    temp_dir, venv_dir = setup_fresh_venv(tag=case)
     try:
-        install_deps(venv_dir, "tox%s" % tox_version, "tox-pip-version")
+        install_deps(venv_dir, "tox", "tox-pip-version")
         install_deps(venv_dir, PACKAGE_DIR)
-        _run_case(venv_dir, subdirectory, env=env)
+        _run_case(venv_dir, case, env=env)
     finally:
         temp_dir.cleanup()

@@ -48,7 +48,6 @@ def tox_testenv_install_deps(venv, action) -> None:
     :param action: Action to run
     :return: Nothing, update current venv setup
     """
-    # _testenv_create(venv, action)
 
     # Grab the env this way to respect `setenv = TOX_SETUPTOOLS_VERSION`, if present.
     # But, fallback to the process-level environment if not present in `setenv`
@@ -77,5 +76,5 @@ def tox_testenv_install_deps(venv, action) -> None:
         print("%s setuptools_version is %s" % (venvname, package))
 
         # "private" _install method - unstable interface?
-        venv._install([package], extraopts=["--force-reinstall"], action=action)
+        venv._install([package], extraopts=["--upgrade"], action=action)
     return None

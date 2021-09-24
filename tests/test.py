@@ -1,7 +1,6 @@
 import os
 import pytest
 import subprocess
-import sys
 import tempfile
 
 HERE = os.path.realpath(os.path.dirname(__file__))
@@ -36,20 +35,16 @@ CASES = [
     (
         "test-two-envs", {}
     ),
-
     (
         "test-env-inheritance", {}
     ),
-
     (
         "test-environment-variable", {"TOX_SETUPTOOLS_VERSION": "58.0.0"}
     ),
-
     (
         "test-version-specifiers", {}
     ),
 ]
-
 
 
 @pytest.mark.parametrize("subdirectory,env", CASES)
@@ -68,16 +63,15 @@ def test_with_tox_version(subdirectory, env):
     finally:
         temp_dir.cleanup()
 
-if sys.version_info.major == 3 and sys.version_info.minor < 9 and sys.version_info.minor > 6:
-    ## Add one case when using tox_pip_version
-    ## This case is only added if we're testing with python>=3.6 and <3.9 because Airflow does not officially support python 3.9
-    CASES.append(("test_with_airflow", {
+## Add one case when using tox_pip_version
+AIRFLOW_CASES = CASES + [
+    ("test_with_airflow", {
         "TOX_SETUPTOOLS_VERSION": "58.0.0",
         "TOX_PIP_VERSION": "20.2.4",
-    },))
+    },)]
 
 
-@pytest.mark.parametrize("subdirectory,env", CASES)
+@pytest.mark.parametrize("subdirectory,env", AIRFLOW_CASES)
 def test_with_tox_version_with_tox_pip_version(subdirectory, env):
     """
     Test our plugin when using in combination with tox-pip-version.
